@@ -11,6 +11,11 @@ public class IsolationRoom : MonoBehaviour
     [Header("성공 시 성장량")]
     public int powerGain = 1;
 
+    private void OnMouseDown()
+    {
+        EnterSelectedEmployee();
+    }
+
     public void EnterSelectedEmployee()
     {
         if (PrototypeGameManager.Instance == null)
@@ -18,4 +23,5 @@ public class IsolationRoom : MonoBehaviour
 
         PrototypeGameManager.Instance.SendSelectedEmployeeToRoom(this);
     }
+
 }

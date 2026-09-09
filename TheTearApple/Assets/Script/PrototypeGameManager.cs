@@ -96,7 +96,9 @@ public class PrototypeGameManager : MonoBehaviour
         selectedEmployeeId = id;
 
         SetMessage(
-            $"직원 {id} 선택 / 성장도 {employee.power}"
+            $"직원 {id} 선택 / " +
+            $"Power : {employee.power} / " +
+            $"장비 : {employee.equipment}"
         );
     }
 

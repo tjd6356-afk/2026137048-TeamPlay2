@@ -17,14 +17,6 @@ public class EmployeeView : MonoBehaviour
         name = $"Employee_{employeeId}";
     }
 
-    private void OnMouseDown()
-    {
-        if (PrototypeGameManager.Instance == null)
-            return;
-
-        PrototypeGameManager.Instance.SelectEmployee(EmployeeId);
-    }
-
     public void SetSelected(bool selected)
     {
         if (selected)

@@ -239,7 +239,7 @@ public class PrototypeGameManager : MonoBehaviour
     // =========================================
 
     public void SendSelectedEmployeeToRoom(
-        IsolationRoom room)
+    IsolationRoom room)
     {
         EmployeeState employee =
             GetSelectedEmployee();
@@ -247,6 +247,22 @@ public class PrototypeGameManager : MonoBehaviour
         if (employee == null)
         {
             SetMessage("직원을 먼저 선택하세요.");
+            return;
+        }
+
+        if (room == null)
+        {
+            SetMessage("격리실 정보가 없습니다.");
+            return;
+        }
+
+        // 격리실에 이면세계가 없는 경우
+        if (room.CurrentOtherworld == null)
+        {
+            SetMessage(
+                "이 격리실에는 아직 이면세계가 없습니다."
+            );
+
             return;
         }
 
@@ -259,34 +275,49 @@ public class PrototypeGameManager : MonoBehaviour
             return;
         }
 
-        // 장비가 맞지 않음
+        // 현재 격리실에 들어있는 이면세계
+        OtherworldData world =
+            room.CurrentOtherworld;
+
+
+        // =========================================
+        // 필요한 장비 검사
+        // =========================================
+
         if (employee.equipment !=
-            room.requiredEquipment)
+            world.requiredEquipment)
         {
             int deadId = employee.id;
 
-            // 직원 사망 시 장비도 손실
+            // 직원 사망
             state.employees.Remove(employee);
 
             selectedEmployeeId = -1;
 
             SetMessage(
                 $"직원 {deadId} 사망! " +
-                $"{room.roomName}에는 " +
-                $"{room.requiredEquipment} 장비가 필요합니다."
+                $"{world.worldName}에는 " +
+                $"{world.requiredEquipment} 장비가 필요합니다."
             );
 
             return;
         }
 
+
+        // =========================================
         // 작업 성공
-        employee.power += room.powerGain;
+        // =========================================
+
+        employee.power +=
+            world.powerGain;
 
         employee.workedToday = true;
 
+
         SetMessage(
             $"직원 {employee.id} 작업 성공! " +
-            $"성장도 +{room.powerGain} " +
+            $"{world.worldName} 작업 / " +
+            $"성장도 +{world.powerGain} / " +
             $"현재 성장도 {employee.power}"
         );
     }

@@ -2,26 +2,110 @@ using UnityEngine;
 
 public class IsolationRoom : MonoBehaviour
 {
-    [Header("격리실 설정")]
-    public string roomName;
+    [Header("격리실 번호")]
+    public int roomNumber;
 
-    [Header("필요 장비")]
-    public EquipmentType requiredEquipment;
 
-    [Header("성공 시 성장량")]
-    public int powerGain = 1;
+    [Header("이면세계 이미지 표시")]
+    public SpriteRenderer otherworldRenderer;
 
-    private void OnMouseDown()
+
+    [Header("이면세계 오브젝트 생성 위치")]
+    public Transform otherworldSpawnPoint;
+
+
+    public OtherworldData CurrentOtherworld
     {
-        EnterSelectedEmployee();
+        get;
+        private set;
     }
 
-    public void EnterSelectedEmployee()
+
+    private GameObject spawnedOtherworldObject;
+
+
+    // =========================================
+    // 이면세계 배치
+    // =========================================
+
+    public void AssignOtherworld(
+        OtherworldData data)
     {
-        if (PrototypeGameManager.Instance == null)
+        if (data == null)
             return;
 
-        PrototypeGameManager.Instance.SendSelectedEmployeeToRoom(this);
+
+        CurrentOtherworld = data;
+
+
+        // 이면세계 이미지 적용
+        if (otherworldRenderer != null)
+        {
+            otherworldRenderer.sprite =
+                data.roomImage;
+
+            otherworldRenderer.enabled =
+                true;
+        }
+
+
+        // 기존 이면세계 오브젝트 제거
+        if (spawnedOtherworldObject != null)
+        {
+            Destroy(
+                spawnedOtherworldObject
+            );
+        }
+
+
+        // 이면세계 Prefab 생성
+        if (data.roomPrefab != null &&
+            otherworldSpawnPoint != null)
+        {
+            spawnedOtherworldObject =
+                Instantiate(
+                    data.roomPrefab,
+                    otherworldSpawnPoint.position,
+                    Quaternion.identity,
+                    otherworldSpawnPoint
+                );
+        }
+
+
+        Debug.Log(
+            $"{roomNumber}번 격리실에 " +
+            $"{data.worldName} 배치"
+        );
     }
 
+
+    // =========================================
+    // 격리실 초기화
+    // =========================================
+
+    public void ClearRoom()
+    {
+        CurrentOtherworld = null;
+
+
+        if (otherworldRenderer != null)
+        {
+            otherworldRenderer.sprite =
+                null;
+
+            otherworldRenderer.enabled =
+                false;
+        }
+
+
+        if (spawnedOtherworldObject != null)
+        {
+            Destroy(
+                spawnedOtherworldObject
+            );
+
+            spawnedOtherworldObject =
+                null;
+        }
+    }
 }

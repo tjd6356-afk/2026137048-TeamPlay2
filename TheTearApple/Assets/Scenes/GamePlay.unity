@@ -1390,6 +1390,7 @@ GameObject:
   m_Component:
   - component: {fileID: 918868659}
   - component: {fileID: 918868660}
+  - component: {fileID: 918868661}
   m_Layer: 0
   m_Name: OtherworldManager
   m_TagString: Untagged
@@ -1430,6 +1431,26 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 86e1c029afe7434418588c662c91da71, type: 2}
   room1: {fileID: 178382425}
   room2: {fileID: 1263122279}
+--- !u!114 &918868661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918868658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 424cf7d5f1f46ac47a8fd5b35bb33354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OtherworldSelectionUI
+  selectionManager: {fileID: 918868660}
+  selectionPanel: {fileID: 1550964642}
+  card1: {fileID: 1651556488}
+  card2: {fileID: 313246333}
+  card3: {fileID: 1184756171}
+  hoverPanel: {fileID: 232015070}
+  hoverNameText: {fileID: 1263773922}
+  hoverDescriptionText: {fileID: 1046076071}
 --- !u!1 &928006806
 GameObject:
   m_ObjectHideFlags: 0
@@ -2637,7 +2658,6 @@ GameObject:
   - component: {fileID: 1550964643}
   - component: {fileID: 1550964645}
   - component: {fileID: 1550964644}
-  - component: {fileID: 1550964646}
   m_Layer: 5
   m_Name: OtherworldSelectionPanel
   m_TagString: Untagged
@@ -2707,26 +2727,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1550964642}
   m_CullTransparentMesh: 1
---- !u!114 &1550964646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1550964642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 424cf7d5f1f46ac47a8fd5b35bb33354, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OtherworldSelectionUI
-  selectionManager: {fileID: 918868660}
-  selectionPanel: {fileID: 1550964642}
-  card1: {fileID: 1651556488}
-  card2: {fileID: 313246333}
-  card3: {fileID: 1184756171}
-  hoverPanel: {fileID: 232015070}
-  hoverNameText: {fileID: 1263773922}
-  hoverDescriptionText: {fileID: 1046076071}
 --- !u!1 &1600658891
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,16 +22,25 @@ public class OtherworldSelectionUI : MonoBehaviour
 
     private void Start()
     {
-        SetupDay1Cards();
+        OpenDay1SelectionUI();
     }
 
 
-    private void SetupDay1Cards()
+    private void OpenDay1SelectionUI()
     {
         if (selectionManager == null)
         {
             Debug.LogError(
                 "OtherworldSelectionManager가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (selectionPanel == null)
+        {
+            Debug.LogError(
+                "OtherworldSelectionPanel이 연결되지 않았습니다."
             );
 
             return;
@@ -46,8 +55,9 @@ public class OtherworldSelectionUI : MonoBehaviour
             return;
         }
 
-        if (selectionPanel != null)
-            selectionPanel.SetActive(true);
+        // 중요:
+        // Hierarchy에서 꺼져 있어도 게임 시작 시 여기서 켠다.
+        selectionPanel.SetActive(true);
 
         if (hoverPanel != null)
             hoverPanel.SetActive(false);
@@ -67,6 +77,10 @@ public class OtherworldSelectionUI : MonoBehaviour
             selectionManager.day1Candidates[2],
             this
         );
+
+        Debug.Log(
+            "Day 1 이면세계 선택 UI 열기"
+        );
     }
 
 
@@ -80,16 +94,11 @@ public class OtherworldSelectionUI : MonoBehaviour
             hoverPanel.SetActive(true);
 
         if (hoverNameText != null)
-        {
-            hoverNameText.text =
-                data.worldName;
-        }
+            hoverNameText.text = data.worldName;
 
         if (hoverDescriptionText != null)
-        {
             hoverDescriptionText.text =
                 data.hoverDescription;
-        }
     }
 
 
@@ -117,7 +126,6 @@ public class OtherworldSelectionUI : MonoBehaviour
         selectionManager.SelectOtherworld(data);
 
 
-        // 정상적으로 선택되었는지 다시 확인
         if (selectionManager.IsSelected(data))
         {
             card.MarkSelected();
@@ -127,7 +135,6 @@ public class OtherworldSelectionUI : MonoBehaviour
         HideHover();
 
 
-        // 두 번째 선택까지 완료
         if (selectionManager.SelectionFinished)
         {
             FinishUI();
@@ -142,8 +149,6 @@ public class OtherworldSelectionUI : MonoBehaviour
         );
 
         if (selectionPanel != null)
-        {
             selectionPanel.SetActive(false);
-        }
     }
 }

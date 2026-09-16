@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ow-03
   m_EditorClassIdentifier: Assembly-CSharp::OtherworldData
   worldID: ow-03
-  worldName: 
+  worldName: ow-03
   selectionImage: {fileID: -370048432957104993, guid: cddd135159b6f9649ae58381fd7269d8, type: 3}
   roomImage: {fileID: -370048432957104993, guid: cddd135159b6f9649ae58381fd7269d8, type: 3}
   roomPrefab: {fileID: 0}
-  hoverDescription: 
-  infoTitle: 
-  infoDescription: 
+  hoverDescription: afafggbbbbbbbbbbbbbbb
+  infoTitle: ow-03
+  infoDescription: adaffggggggggggggggggggggggggggggggggggggg
   requiredEquipment: 0
   powerGain: 1
   hpDamage: 0

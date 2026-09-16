@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8588d12d8b94d054a9ac6d6d2d5a9ae2, type: 3}
-  m_Name: NewOtherworld
+  m_Name: ow-02
   m_EditorClassIdentifier: Assembly-CSharp::OtherworldData
-  worldID: 
+  worldID: ow-02
   worldName: 
-  selectionImage: {fileID: 0}
-  roomImage: {fileID: 0}
+  selectionImage: {fileID: -370048432957104993, guid: cddd135159b6f9649ae58381fd7269d8, type: 3}
+  roomImage: {fileID: -370048432957104993, guid: cddd135159b6f9649ae58381fd7269d8, type: 3}
   roomPrefab: {fileID: 0}
   hoverDescription: 
   infoTitle: 

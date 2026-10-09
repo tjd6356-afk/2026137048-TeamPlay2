@@ -10,6 +10,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Vector2 moveInput;
 
+    [SerializeField]
+    private PlayerAnimationController animationController;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -52,6 +55,11 @@ public class PlayerMovement : MonoBehaviour
         {
             moveInput.Normalize();
         }
+
+        bool isMoving =
+        moveInput.sqrMagnitude > 0.01f;
+
+        animationController?.SetMoving(isMoving);
     }
 
     private void Move()

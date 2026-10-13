@@ -10,11 +10,23 @@ public class PlayerShooter : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private PlayerAnimationController animationController;
 
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootSound;
+    [Range(0f, 1f)]
+    [SerializeField] private float shootVolume = 1f;
+
     private Camera mainCam;
 
     private void Start()
     {
         mainCam = Camera.main;
+
+        // 직접 넣지 않았으면 Player에서 자동으로 찾기
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     private void Update()
@@ -40,15 +52,12 @@ public class PlayerShooter : MonoBehaviour
         if (firePoint == null)
             return;
 
-        // 마우스 화면 좌표
         Vector2 mouseScreenPosition =
             Mouse.current.position.ReadValue();
 
-        // 카메라 -> 마우스 방향 Ray
         Ray ray =
             mainCam.ScreenPointToRay(mouseScreenPosition);
 
-        // FirePoint와 같은 높이의 가상 평면
         Plane groundPlane =
             new Plane(
                 Vector3.up,
@@ -59,9 +68,7 @@ public class PlayerShooter : MonoBehaviour
                 )
             );
 
-        if (groundPlane.Raycast(
-            ray,
-            out float enterDistance))
+        if (groundPlane.Raycast(ray, out float enterDistance))
         {
             Vector3 hitPoint =
                 ray.GetPoint(enterDistance);
@@ -71,7 +78,6 @@ public class PlayerShooter : MonoBehaviour
 
             shootDirection.y = 0f;
 
-            // 방향값이 너무 작으면 발사하지 않음
             if (shootDirection.sqrMagnitude < 0.001f)
                 return;
 
@@ -84,11 +90,28 @@ public class PlayerShooter : MonoBehaviour
                 Quaternion.LookRotation(shootDirection)
             );
 
-            // 총알이 실제로 발사된 순간 Throw 애니메이션 실행
+            // 공격 애니메이션
             if (animationController != null)
             {
                 animationController.PlayThrow();
             }
+
+            // 발사 효과음
+            PlayShootSound();
         }
+    }
+
+    private void PlayShootSound()
+    {
+        if (audioSource == null)
+            return;
+
+        if (shootSound == null)
+            return;
+
+        audioSource.PlayOneShot(
+            shootSound,
+            shootVolume
+        );
     }
 }

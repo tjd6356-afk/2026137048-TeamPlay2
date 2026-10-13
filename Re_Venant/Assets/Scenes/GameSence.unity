@@ -787,9 +787,9 @@ GameObject:
   m_Component:
   - component: {fileID: 882901463}
   - component: {fileID: 882901464}
-  - component: {fileID: 882901465}
   - component: {fileID: 882901466}
   - component: {fileID: 882901467}
+  - component: {fileID: 882901468}
   m_Layer: 0
   m_Name: Enemy_Melee
   m_TagString: Untagged
@@ -836,33 +836,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &882901465
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 882901462}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!195 &882901466
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -898,9 +871,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeEnemyAI
   agent: {fileID: 882901466}
-  protectTarget: {fileID: 1421274939}
+  protect: {fileID: 1421274941}
   damage: 10
+  attackRange: 0.1
   attackInterval: 1
+--- !u!114 &882901468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882901462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da51de8f06396be498870c84ac523fc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHealth: 50
 --- !u!1 &931858323
 GameObject:
   m_ObjectHideFlags: 0

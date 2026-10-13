@@ -3,8 +3,13 @@
 public class Bullet : MonoBehaviour
 {
     [Header("Bullet Settings")]
-    [SerializeField] private float speed = 15f;      // 탄환 속도
-    [SerializeField] private float maxDistance = 20f;// 최대 이동 거리
+    [SerializeField] private float speed = 15f;
+
+    [SerializeField]
+    private float maxDistance = 20f;
+
+    [Header("Damage")]
+    [SerializeField] private float damage = 10f;
 
     private Vector3 startPosition;
 
@@ -13,8 +18,9 @@ public class Bullet : MonoBehaviour
         // 생성된 위치 저장
         startPosition = transform.position;
 
-        // 임시로 노란색 구체로 만들기 위해 머티리얼 색상 변경
+        // 테스트용 총알 색상
         Renderer renderer = GetComponent<Renderer>();
+
         if (renderer != null)
         {
             renderer.material.color = Color.yellow;
@@ -23,28 +29,50 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        // 초당 speed만큼 앞(forward)으로 이동
-        // PlayerShooter에서 Instantiate할 때 이미 목적지를 바라보게 회전시켰으므로 forward로 전진하면 됩니다.
-        transform.position += transform.forward * speed * Time.deltaTime;
+        // 앞으로 이동
+        transform.position +=
+            transform.forward *
+            speed *
+            Time.deltaTime;
 
-        // 시작 위치와 현재 위치의 거리를 계산
-        float traveledDistance = Vector3.Distance(startPosition, transform.position);
+        // 이동 거리 계산
+        float traveledDistance =
+            Vector3.Distance(
+                startPosition,
+                transform.position
+            );
 
-        // 정해진 거리 이상 날아갔다면 파괴
+        // 최대 사거리 초과 시 삭제
         if (traveledDistance >= maxDistance)
         {
             Destroy(gameObject);
         }
     }
 
-    // (선택) 무언가에 부딪혔을 때 파괴되도록 하려면 아래 코드를 활용하세요.
-    /*
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")) 
+        // Protect에는 플레이어 총알 데미지를 주지 않음
+        ProtectHealth protect =
+            other.GetComponentInParent<ProtectHealth>();
+
+        if (protect != null)
         {
+            return;
+        }
+
+        // 맞은 오브젝트에서 EnemyHealth 찾기
+        EnemyHealth enemy =
+            other.GetComponentInParent<EnemyHealth>();
+
+        if (enemy != null)
+        {
+            // Enemy 데미지
+            enemy.TakeDamage(damage);
+
+            // 총알 삭제
             Destroy(gameObject);
+
+            return;
         }
     }
-    */
 }

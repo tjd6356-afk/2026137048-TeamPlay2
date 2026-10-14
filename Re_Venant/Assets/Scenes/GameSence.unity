@@ -2157,14 +2157,14 @@ MonoBehaviour:
   weaponTransform: {fileID: 1653502750}
   hitboxPrefab: {fileID: 4080139292595352875, guid: 02724c22473a5b246a6af1df96188e00, type: 3}
   hitboxPoint: {fileID: 22519740}
-  damage: 20
+  damage: 100
   attackCooldown: 0.6
   hitboxLifeTime: 0.15
   hitboxSpawnDelay: 0.08
   swingAngle: 110
   swingDuration: 0.25
   audioSource: {fileID: 1427846229}
-  bryySound: {fileID: 8300000, guid: 030687eee26f03f4f874cf0ac5efd257, type: 3}
+  bryySound: {fileID: 8300000, guid: a9c5a6ee1b3122445bec837ef3493db1, type: 3}
   yahaSound: {fileID: 8300000, guid: a9c5a6ee1b3122445bec837ef3493db1, type: 3}
   attackSoundVolume: 1
 --- !u!114 &1427846231

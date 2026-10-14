@@ -7,12 +7,16 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
 
+    [Header("Bullet Health")]
+    [SerializeField] private PlayerBulletHealth bulletHealth;
+
     [Header("Animation")]
     [SerializeField] private PlayerAnimationController animationController;
 
     [Header("Sound")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip shootSound;
+
     [Range(0f, 1f)]
     [SerializeField] private float shootVolume = 1f;
 
@@ -22,10 +26,16 @@ public class PlayerShooter : MonoBehaviour
     {
         mainCam = Camera.main;
 
-        // 직접 넣지 않았으면 Player에서 자동으로 찾기
+        if (bulletHealth == null)
+        {
+            bulletHealth =
+                GetComponent<PlayerBulletHealth>();
+        }
+
         if (audioSource == null)
         {
-            audioSource = GetComponent<AudioSource>();
+            audioSource =
+                GetComponent<AudioSource>();
         }
     }
 
@@ -34,7 +44,6 @@ public class PlayerShooter : MonoBehaviour
         if (Mouse.current == null)
             return;
 
-        // 마우스 왼쪽 버튼을 누른 순간 발사
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             Shoot();
@@ -52,11 +61,24 @@ public class PlayerShooter : MonoBehaviour
         if (firePoint == null)
             return;
 
+        if (bulletHealth == null)
+            return;
+
+        // 이미 죽었으면 발사 불가
+        if (bulletHealth.IsDead)
+            return;
+
+        // 남은 총알이 없으면 발사 불가
+        if (bulletHealth.CurrentBullets <= 0)
+            return;
+
         Vector2 mouseScreenPosition =
             Mouse.current.position.ReadValue();
 
         Ray ray =
-            mainCam.ScreenPointToRay(mouseScreenPosition);
+            mainCam.ScreenPointToRay(
+                mouseScreenPosition
+            );
 
         Plane groundPlane =
             new Plane(
@@ -68,7 +90,9 @@ public class PlayerShooter : MonoBehaviour
                 )
             );
 
-        if (groundPlane.Raycast(ray, out float enterDistance))
+        if (groundPlane.Raycast(
+            ray,
+            out float enterDistance))
         {
             Vector3 hitPoint =
                 ray.GetPoint(enterDistance);
@@ -87,31 +111,29 @@ public class PlayerShooter : MonoBehaviour
             Instantiate(
                 bulletPrefab,
                 firePoint.position,
-                Quaternion.LookRotation(shootDirection)
+                Quaternion.LookRotation(
+                    shootDirection
+                )
             );
 
-            // 공격 애니메이션
+            // 발사했으므로 총알 1개 소비
+            bulletHealth.UseBullet(1);
+
+            // Throw 애니메이션
             if (animationController != null)
             {
                 animationController.PlayThrow();
             }
 
             // 발사 효과음
-            PlayShootSound();
+            if (audioSource != null &&
+                shootSound != null)
+            {
+                audioSource.PlayOneShot(
+                    shootSound,
+                    shootVolume
+                );
+            }
         }
-    }
-
-    private void PlayShootSound()
-    {
-        if (audioSource == null)
-            return;
-
-        if (shootSound == null)
-            return;
-
-        audioSource.PlayOneShot(
-            shootSound,
-            shootVolume
-        );
     }
 }

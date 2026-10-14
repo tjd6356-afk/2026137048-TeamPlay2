@@ -23,6 +23,16 @@ public class PlayerMeleeAttack : MonoBehaviour
     [SerializeField] private float swingAngle = -120f;
     [SerializeField] private float swingDuration = 0.25f;
 
+    [Header("Attack Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip bryySound;
+    [SerializeField] private AudioClip yahaSound;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float attackSoundVolume = 1f;
+
+    private int attackSoundIndex = 0;
+
     private bool isAttacking = false;
 
     private Quaternion weaponStartRotation;
@@ -62,6 +72,10 @@ public class PlayerMeleeAttack : MonoBehaviour
         if (hitboxPoint == null)
             return;
 
+        // 공격 음성 재생
+        PlayAttackSound();
+
+        // 실제 공격 실행
         StartCoroutine(AttackRoutine());
     }
 
@@ -188,6 +202,33 @@ public class PlayerMeleeAttack : MonoBehaviour
                 damage,
                 hitboxLifeTime,
                 transform
+            );
+        }
+    }
+
+    private void PlayAttackSound()
+    {
+        if (audioSource == null)
+            return;
+
+        AudioClip soundToPlay = null;
+
+        if (attackSoundIndex == 0)
+        {
+            soundToPlay = bryySound;
+            attackSoundIndex = 1;
+        }
+        else
+        {
+            soundToPlay = yahaSound;
+            attackSoundIndex = 0;
+        }
+
+        if (soundToPlay != null)
+        {
+            audioSource.PlayOneShot(
+                soundToPlay,
+                attackSoundVolume
             );
         }
     }

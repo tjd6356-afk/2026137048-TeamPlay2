@@ -6,6 +6,8 @@ public class GameOverManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject gameOverPanel;
 
+    [Header("Score")]
+    [SerializeField] private ScoreManager scoreManager;
     private bool isGameOver = false;
 
     private void Awake()
@@ -18,6 +20,12 @@ public class GameOverManager : MonoBehaviour
 
         // 혹시 이전 Scene에서 멈춰 있었다면 정상화
         Time.timeScale = 1f;
+
+        if (scoreManager == null)
+        {
+            scoreManager =
+                FindFirstObjectByType<ScoreManager>();
+        }
     }
 
     public void GameOver()
@@ -27,7 +35,13 @@ public class GameOverManager : MonoBehaviour
 
         isGameOver = true;
 
-        // 게임 오버 패널 표시
+        // 최종 점수 확정
+        if (scoreManager != null)
+        {
+            scoreManager.FinishGame();
+        }
+
+        // 게임 오버 UI 표시
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);

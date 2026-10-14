@@ -8,6 +8,9 @@ public class EnemyHealth : MonoBehaviour
     [Header("Score")]
     [SerializeField] private int killScore = 100;
 
+    [Header("Experience Drop")]
+    [SerializeField] private GameObject experiencePrefab;
+    [SerializeField] private int experienceAmount = 3;
     private float currentHealth;
     private bool isDead = false;
 
@@ -63,7 +66,7 @@ public class EnemyHealth : MonoBehaviour
 
         Debug.Log("Enemy Dead");
 
-        // 적 처치 점수 지급
+        // 점수 지급
         if (scoreManager != null)
         {
             scoreManager.AddKillScore(
@@ -71,6 +74,32 @@ public class EnemyHealth : MonoBehaviour
             );
         }
 
+        // 경험치 드롭
+        DropExperience();
+
         Destroy(gameObject);
+    }
+
+    private void DropExperience()
+    {
+        if (experiencePrefab == null)
+            return;
+
+        GameObject expObject =
+            Instantiate(
+                experiencePrefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+        ExperienceOrb expOrb =
+            expObject.GetComponent<ExperienceOrb>();
+
+        if (expOrb != null)
+        {
+            expOrb.SetExperience(
+                experienceAmount
+            );
+        }
     }
 }

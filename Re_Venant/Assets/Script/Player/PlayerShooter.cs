@@ -10,6 +10,15 @@ public class PlayerShooter : MonoBehaviour
     [Header("Bullet Health")]
     [SerializeField] private PlayerBulletHealth bulletHealth;
 
+    [Header("Shoot")]
+    [SerializeField] private int projectilesPerShot = 1;
+
+    [Tooltip("초당 발사 횟수")]
+    [SerializeField] private float fireRate = 2f;
+
+    [Tooltip("여러 발 발사 시 탄환 사이 각도")]
+    [SerializeField] private float spreadAngle = 8f;
+
     [Header("Animation")]
     [SerializeField] private PlayerAnimationController animationController;
 
@@ -21,6 +30,11 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private float shootVolume = 1f;
 
     private Camera mainCam;
+
+    private float nextFireTime;
+
+    public int ProjectilesPerShot => projectilesPerShot;
+    public float FireRate => fireRate;
 
     private void Start()
     {
@@ -44,7 +58,15 @@ public class PlayerShooter : MonoBehaviour
         if (Mouse.current == null)
             return;
 
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (bulletHealth == null)
+            return;
+
+        if (bulletHealth.IsDead)
+            return;
+
+        // 마우스를 누르고 있으면 발사속도에 맞춰 계속 발사
+        if (Mouse.current.leftButton.isPressed &&
+            Time.time >= nextFireTime)
         {
             Shoot();
         }
@@ -61,14 +83,6 @@ public class PlayerShooter : MonoBehaviour
         if (firePoint == null)
             return;
 
-        if (bulletHealth == null)
-            return;
-
-        // 이미 죽었으면 발사 불가
-        if (bulletHealth.IsDead)
-            return;
-
-        // 남은 총알이 없으면 발사 불가
         if (bulletHealth.CurrentBullets <= 0)
             return;
 
@@ -90,50 +104,121 @@ public class PlayerShooter : MonoBehaviour
                 )
             );
 
-        if (groundPlane.Raycast(
+        if (!groundPlane.Raycast(
             ray,
             out float enterDistance))
         {
-            Vector3 hitPoint =
-                ray.GetPoint(enterDistance);
+            return;
+        }
 
-            Vector3 shootDirection =
-                hitPoint - firePoint.position;
+        Vector3 hitPoint =
+            ray.GetPoint(enterDistance);
 
-            shootDirection.y = 0f;
+        Vector3 shootDirection =
+            hitPoint - firePoint.position;
 
-            if (shootDirection.sqrMagnitude < 0.001f)
-                return;
+        shootDirection.y = 0f;
 
-            shootDirection.Normalize();
+        if (shootDirection.sqrMagnitude < 0.001f)
+            return;
 
-            // 총알 생성
+        shootDirection.Normalize();
+
+        // 남은 총알보다 많이 발사하지 않음
+        int bulletsToFire =
+            Mathf.Min(
+                projectilesPerShot,
+                bulletHealth.CurrentBullets
+            );
+
+        // 여러 발을 부채꼴로 발사
+        float totalSpread =
+            spreadAngle *
+            (bulletsToFire - 1);
+
+        float startAngle =
+            -totalSpread * 0.5f;
+
+        for (int i = 0; i < bulletsToFire; i++)
+        {
+            float angle =
+                startAngle +
+                spreadAngle * i;
+
+            Vector3 direction =
+                Quaternion.AngleAxis(
+                    angle,
+                    Vector3.up
+                ) * shootDirection;
+
             Instantiate(
                 bulletPrefab,
                 firePoint.position,
-                Quaternion.LookRotation(
-                    shootDirection
-                )
+                Quaternion.LookRotation(direction)
+            );
+        }
+
+        // 실제 발사된 탄환 개수만큼 체력/탄환 소비
+        bulletHealth.UseBullet(
+            bulletsToFire
+        );
+
+        if (animationController != null)
+        {
+            animationController.PlayThrow();
+        }
+
+        if (audioSource != null &&
+            shootSound != null)
+        {
+            audioSource.PlayOneShot(
+                shootSound,
+                shootVolume
+            );
+        }
+
+        nextFireTime =
+            Time.time +
+            (1f / fireRate);
+    }
+
+    // ----------------------------
+    // 강화 카드에서 사용하는 함수
+    // ----------------------------
+
+    public void IncreaseProjectilesPerShot(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        projectilesPerShot += amount;
+
+        projectilesPerShot =
+            Mathf.Max(
+                1,
+                projectilesPerShot
             );
 
-            // 발사했으므로 총알 1개 소비
-            bulletHealth.UseBullet(1);
+        Debug.Log(
+            $"발사량 증가 : {projectilesPerShot}"
+        );
+    }
 
-            // Throw 애니메이션
-            if (animationController != null)
-            {
-                animationController.PlayThrow();
-            }
+    public void IncreaseFireRate(float amount)
+    {
+        if (amount <= 0f)
+            return;
 
-            // 발사 효과음
-            if (audioSource != null &&
-                shootSound != null)
-            {
-                audioSource.PlayOneShot(
-                    shootSound,
-                    shootVolume
-                );
-            }
-        }
+        fireRate += amount;
+
+        fireRate =
+            Mathf.Max(
+                0.1f,
+                fireRate
+            );
+
+        Debug.Log(
+            $"발사속도 증가 : {fireRate}"
+        );
     }
 }

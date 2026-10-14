@@ -1,14 +1,28 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelUpManager : MonoBehaviour
 {
     [Header("Player")]
     [SerializeField] private PlayerExperience playerExperience;
+    [SerializeField] private PlayerUpgradeController upgradeController;
 
     [Header("UI")]
     [SerializeField] private GameObject levelUpPanel;
 
+    [Header("Cards")]
+    [SerializeField]
+    private List<UpgradeCardData> availableCards =
+        new List<UpgradeCardData>();
+
+    [SerializeField]
+    private List<LevelUpCardUI> cardSlots =
+        new List<LevelUpCardUI>();
+
     private bool isLevelUpOpen = false;
+
+    // 한번에 여러 레벨업을 했을 때 저장
+    private int pendingLevelUps = 0;
 
     private void Start()
     {
@@ -18,6 +32,12 @@ public class LevelUpManager : MonoBehaviour
                 FindFirstObjectByType<PlayerExperience>();
         }
 
+        if (upgradeController == null)
+        {
+            upgradeController =
+                FindFirstObjectByType<PlayerUpgradeController>();
+        }
+
         if (levelUpPanel != null)
         {
             levelUpPanel.SetActive(false);
@@ -25,7 +45,8 @@ public class LevelUpManager : MonoBehaviour
 
         if (playerExperience != null)
         {
-            playerExperience.OnLevelUp += OpenLevelUpPanel;
+            playerExperience.OnLevelUp +=
+                OnPlayerLevelUp;
         }
     }
 
@@ -33,15 +54,23 @@ public class LevelUpManager : MonoBehaviour
     {
         if (playerExperience != null)
         {
-            playerExperience.OnLevelUp -= OpenLevelUpPanel;
+            playerExperience.OnLevelUp -=
+                OnPlayerLevelUp;
+        }
+    }
+
+    private void OnPlayerLevelUp()
+    {
+        pendingLevelUps++;
+
+        if (!isLevelUpOpen)
+        {
+            OpenLevelUpPanel();
         }
     }
 
     private void OpenLevelUpPanel()
     {
-        if (isLevelUpOpen)
-            return;
-
         isLevelUpOpen = true;
 
         if (levelUpPanel != null)
@@ -49,18 +78,86 @@ public class LevelUpManager : MonoBehaviour
             levelUpPanel.SetActive(true);
         }
 
-        // 게임 일시정지
-        Time.timeScale = 0f;
+        RollCards();
 
-        Debug.Log("LEVEL UP PANEL OPEN");
+        Time.timeScale = 0f;
     }
 
-    // 나중에는 카드 선택 버튼이 이 함수를 호출하게 됨
-    public void CompleteLevelUpSelection()
+    private void RollCards()
+    {
+        List<UpgradeCardData> pool =
+            new List<UpgradeCardData>();
+
+        foreach (UpgradeCardData card in availableCards)
+        {
+            if (card != null)
+            {
+                pool.Add(card);
+            }
+        }
+
+        for (int i = 0; i < cardSlots.Count; i++)
+        {
+            LevelUpCardUI slot =
+                cardSlots[i];
+
+            if (slot == null)
+                continue;
+
+            if (pool.Count == 0)
+            {
+                slot.gameObject.SetActive(false);
+                continue;
+            }
+
+            slot.gameObject.SetActive(true);
+
+            int randomIndex =
+                Random.Range(
+                    0,
+                    pool.Count
+                );
+
+            UpgradeCardData selected =
+                pool[randomIndex];
+
+            pool.RemoveAt(randomIndex);
+
+            slot.Setup(
+                selected,
+                this
+            );
+        }
+    }
+
+    public void SelectCard(
+        UpgradeCardData card)
     {
         if (!isLevelUpOpen)
             return;
 
+        if (upgradeController != null)
+        {
+            upgradeController.ApplyUpgrade(
+                card
+            );
+        }
+
+        pendingLevelUps--;
+
+        // 레벨업이 여러 번 쌓여있으면
+        // 다시 카드 3장 표시
+        if (pendingLevelUps > 0)
+        {
+            RollCards();
+            return;
+        }
+
+        CloseLevelUpPanel();
+    }
+
+    private void CloseLevelUpPanel()
+    {
         isLevelUpOpen = false;
 
         if (levelUpPanel != null)
@@ -69,7 +166,5 @@ public class LevelUpManager : MonoBehaviour
         }
 
         Time.timeScale = 1f;
-
-        Debug.Log("LEVEL UP COMPLETE");
     }
 }

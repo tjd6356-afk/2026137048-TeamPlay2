@@ -138,4 +138,28 @@ public class PlayerBulletHealth : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    // 레벨업 시 나오는 카드를 선택 했을 때, 최대 총알 수 증가
+    public void IncreaseMaxBullets(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        maxBullets += amount;
+
+        // 최대치가 올라간 만큼 현재 총알도 지급
+        currentBullets += amount;
+
+        currentBullets = Mathf.Clamp(
+            currentBullets,
+            0,
+            maxBullets
+        );
+
+        NotifyBulletsChanged();
+
+        Debug.Log(
+            $"Max Bullet 증가 : {maxBullets}"
+        );
+    }
 }

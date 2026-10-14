@@ -31,6 +31,10 @@ public class PlayerMeleeAttack : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float attackSoundVolume = 1f;
 
+    private float meleeRangeMultiplier = 1f;
+
+    private Vector3 baseWeaponScale;
+    private Vector3 baseHitboxPointPosition;
     private int attackSoundIndex = 0;
 
     private bool isAttacking = false;
@@ -43,6 +47,21 @@ public class PlayerMeleeAttack : MonoBehaviour
         {
             weaponStartRotation =
                 weaponTransform.localRotation;
+
+            baseWeaponScale =
+                weaponTransform.localScale;
+        }
+
+        if (hitboxPoint != null)
+        {
+            baseHitboxPointPosition =
+                hitboxPoint.localPosition;
+        }
+
+        if (audioSource == null)
+        {
+            audioSource =
+                GetComponent<AudioSource>();
         }
     }
 
@@ -193,6 +212,10 @@ public class PlayerMeleeAttack : MonoBehaviour
                 hitboxPoint
             );
 
+        // 강화된 근접 공격 범위 적용
+        hitboxObject.transform.localScale *=
+            meleeRangeMultiplier;
+
         MeleeHitbox hitbox =
             hitboxObject.GetComponent<MeleeHitbox>();
 
@@ -231,5 +254,51 @@ public class PlayerMeleeAttack : MonoBehaviour
                 attackSoundVolume
             );
         }
+    }
+
+    public void IncreaseDamage(float amount)
+    {
+        if (amount <= 0f)
+            return;
+
+        damage += amount;
+
+        Debug.Log(
+            $"Melee Damage 증가 : {damage}"
+        );
+    }
+
+    public void IncreaseRange(float amount)
+    {
+        if (amount <= 0f)
+            return;
+
+        meleeRangeMultiplier += amount;
+
+        // 실제 Weapon 크기도 증가
+        if (weaponTransform != null)
+        {
+            weaponTransform.localScale =
+                baseWeaponScale *
+                meleeRangeMultiplier;
+        }
+
+        // Hitbox 생성 지점도 조금 더 앞으로 이동
+        if (hitboxPoint != null)
+        {
+            Vector3 newPosition =
+                baseHitboxPointPosition;
+
+            newPosition.z =
+                baseHitboxPointPosition.z *
+                meleeRangeMultiplier;
+
+            hitboxPoint.localPosition =
+                newPosition;
+        }
+
+        Debug.Log(
+            $"Melee Range 증가 : x{meleeRangeMultiplier}"
+        );
     }
 }

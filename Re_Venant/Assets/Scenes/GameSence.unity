@@ -270,6 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c64697a14528f643a047e2c7de666f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownCamera
+  thirdPersonViewLocked: 0
   player: {fileID: 1427846222}
   firstPersonPoint: {fileID: 1681043534}
   targetCamera: {fileID: 21280973}
@@ -3238,6 +3239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a5639c4fa5824743945aed066291516, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  cameraController: {fileID: 21280976}
   viewModeManager: {fileID: 1427846234}
   animationController: {fileID: 1427846228}
   moveSpeed: 6
@@ -3247,6 +3249,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+  rotationSpeed: 12
+  mainCamera: {fileID: 0}
 --- !u!54 &1427846224
 Rigidbody:
   m_ObjectHideFlags: 0

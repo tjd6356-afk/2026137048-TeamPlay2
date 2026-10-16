@@ -42,6 +42,10 @@ public class OffScreenIndicatorManager : MonoBehaviour
         if (!activeIndicators.ContainsKey(target) && indicatorPrefab != null)
         {
             GameObject newIndicator = Instantiate(indicatorPrefab, canvasRect);
+
+
+            newIndicator.transform.SetAsFirstSibling();
+
             activeIndicators.Add(target, newIndicator.GetComponent<RectTransform>());
         }
     }

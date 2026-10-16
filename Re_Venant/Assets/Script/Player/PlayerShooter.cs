@@ -29,6 +29,16 @@ public class PlayerShooter : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float shootVolume = 1f;
 
+    [Header("View")]
+    [SerializeField]
+    private PlayerViewModeManager viewModeManager;
+
+    [Header("Aim")]
+    [SerializeField]
+    private LayerMask aimLayerMask = ~0;
+
+    [SerializeField]
+    private float aimDistance = 200f;
     private Camera mainCam;
 
     private float nextFireTime;
@@ -74,6 +84,14 @@ public class PlayerShooter : MonoBehaviour
 
     private void Shoot()
     {
+        Vector3 shootDirection;
+
+        if (!TryGetShootDirection(
+            out shootDirection))
+        {
+            return;
+        }
+
         if (mainCam == null)
             return;
 
@@ -85,44 +103,6 @@ public class PlayerShooter : MonoBehaviour
 
         if (bulletHealth.CurrentBullets <= 0)
             return;
-
-        Vector2 mouseScreenPosition =
-            Mouse.current.position.ReadValue();
-
-        Ray ray =
-            mainCam.ScreenPointToRay(
-                mouseScreenPosition
-            );
-
-        Plane groundPlane =
-            new Plane(
-                Vector3.up,
-                new Vector3(
-                    0f,
-                    firePoint.position.y,
-                    0f
-                )
-            );
-
-        if (!groundPlane.Raycast(
-            ray,
-            out float enterDistance))
-        {
-            return;
-        }
-
-        Vector3 hitPoint =
-            ray.GetPoint(enterDistance);
-
-        Vector3 shootDirection =
-            hitPoint - firePoint.position;
-
-        shootDirection.y = 0f;
-
-        if (shootDirection.sqrMagnitude < 0.001f)
-            return;
-
-        shootDirection.Normalize();
 
         // 남은 총알보다 많이 발사하지 않음
         int bulletsToFire =
@@ -220,5 +200,116 @@ public class PlayerShooter : MonoBehaviour
         Debug.Log(
             $"발사속도 증가 : {fireRate}"
         );
+    }
+
+    private bool TryGetShootDirection(
+    out Vector3 shootDirection)
+    {
+        shootDirection =
+            Vector3.zero;
+
+        if (mainCam == null ||
+            firePoint == null)
+        {
+            return false;
+        }
+
+        // ==================================
+        // TOP VIEW
+        // ==================================
+
+        if (viewModeManager == null ||
+            viewModeManager.CurrentMode ==
+            PlayerViewMode.TopDown)
+        {
+            if (Mouse.current == null)
+                return false;
+
+            Vector2 mousePosition =
+                Mouse.current.position.ReadValue();
+
+            Ray ray =
+                mainCam.ScreenPointToRay(
+                    mousePosition
+                );
+
+            Plane groundPlane =
+                new Plane(
+                    Vector3.up,
+                    new Vector3(
+                        0f,
+                        firePoint.position.y,
+                        0f
+                    )
+                );
+
+            if (!groundPlane.Raycast(
+                ray,
+                out float enter))
+            {
+                return false;
+            }
+
+            Vector3 hitPoint =
+                ray.GetPoint(enter);
+
+            shootDirection =
+                hitPoint -
+                firePoint.position;
+
+            shootDirection.y = 0f;
+        }
+
+        // ==================================
+        // THIRD / FIRST PERSON
+        // ==================================
+
+        else
+        {
+            Vector2 screenCenter =
+                new Vector2(
+                    Screen.width * 0.5f,
+                    Screen.height * 0.5f
+                );
+
+            Ray ray =
+                mainCam.ScreenPointToRay(
+                    screenCenter
+                );
+
+            Vector3 targetPoint;
+
+            if (Physics.Raycast(
+                ray,
+                out RaycastHit hit,
+                aimDistance,
+                aimLayerMask,
+                QueryTriggerInteraction.Ignore))
+            {
+                targetPoint =
+                    hit.point;
+            }
+            else
+            {
+                targetPoint =
+                    ray.origin +
+                    ray.direction *
+                    aimDistance;
+            }
+
+            shootDirection =
+                targetPoint -
+                firePoint.position;
+        }
+
+        if (shootDirection.sqrMagnitude <
+            0.001f)
+        {
+            return false;
+        }
+
+        shootDirection.Normalize();
+
+        return true;
     }
 }

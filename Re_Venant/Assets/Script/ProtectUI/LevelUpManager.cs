@@ -19,6 +19,10 @@ public class LevelUpManager : MonoBehaviour
     private List<LevelUpCardUI> cardSlots =
         new List<LevelUpCardUI>();
 
+    [Header("View")]
+    [SerializeField]
+    private PlayerViewModeManager viewModeManager;
+
     private bool isLevelUpOpen = false;
 
     // 한번에 여러 레벨업을 했을 때 저장
@@ -47,6 +51,12 @@ public class LevelUpManager : MonoBehaviour
         {
             playerExperience.OnLevelUp +=
                 OnPlayerLevelUp;
+        }
+
+        if (viewModeManager == null)
+        {
+            viewModeManager =
+                FindFirstObjectByType<PlayerViewModeManager>();
         }
     }
 
@@ -79,6 +89,12 @@ public class LevelUpManager : MonoBehaviour
         }
 
         RollCards();
+
+        // 레벨업 UI에서는 마우스 사용 가능
+        if (viewModeManager != null)
+        {
+            viewModeManager.SetUIMode(true);
+        }
 
         Time.timeScale = 0f;
     }
@@ -163,6 +179,12 @@ public class LevelUpManager : MonoBehaviour
         if (levelUpPanel != null)
         {
             levelUpPanel.SetActive(false);
+        }
+
+        // 현재 시점에 맞게 마우스 상태 복원
+        if (viewModeManager != null)
+        {
+            viewModeManager.SetUIMode(false);
         }
 
         Time.timeScale = 1f;

@@ -8,23 +8,31 @@ public class GameOverManager : MonoBehaviour
 
     [Header("Score")]
     [SerializeField] private ScoreManager scoreManager;
+
+    [Header("View")]
+    [SerializeField] private PlayerViewModeManager viewModeManager;
+
     private bool isGameOver = false;
 
     private void Awake()
     {
-        // 게임 시작 시 패널 숨기기
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
         }
 
-        // 혹시 이전 Scene에서 멈춰 있었다면 정상화
         Time.timeScale = 1f;
 
         if (scoreManager == null)
         {
             scoreManager =
                 FindFirstObjectByType<ScoreManager>();
+        }
+
+        if (viewModeManager == null)
+        {
+            viewModeManager =
+                FindFirstObjectByType<PlayerViewModeManager>();
         }
     }
 
@@ -35,16 +43,30 @@ public class GameOverManager : MonoBehaviour
 
         isGameOver = true;
 
-        // 최종 점수 확정
+        // 최종 점수 계산
         if (scoreManager != null)
         {
             scoreManager.FinishGame();
         }
 
-        // 게임 오버 UI 표시
+        // 게임 오버 패널 표시
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
+        }
+
+        // ==============================
+        // 마우스를 UI 조작 가능 상태로 변경
+        // ==============================
+        if (viewModeManager != null)
+        {
+            viewModeManager.SetUIMode(true);
+        }
+        else
+        {
+            // 안전장치
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         // 게임 정지
@@ -55,21 +77,28 @@ public class GameOverManager : MonoBehaviour
 
     public void ReplayGame()
     {
-        // 반드시 시간 정상화 후 Scene 재로드
+        // 시간 정상화
         Time.timeScale = 1f;
 
-        Scene currentScene = SceneManager.GetActiveScene();
+        // Cursor도 우선 정상화
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
-        SceneManager.LoadScene(currentScene.buildIndex);
+        Scene currentScene =
+            SceneManager.GetActiveScene();
+
+        SceneManager.LoadScene(
+            currentScene.buildIndex
+        );
     }
 
     public void ExitGame()
     {
-        // 실제 빌드된 게임 종료
+        Time.timeScale = 1f;
+
         Application.Quit();
 
 #if UNITY_EDITOR
-        // Unity Editor에서 Play Mode 종료
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }

@@ -60,7 +60,7 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        // 맞은 오브젝트에서 EnemyHealth 찾기
+        // 1. 맞은 오브젝트에서 EnemyHealth 찾기
         EnemyHealth enemy =
             other.GetComponentInParent<EnemyHealth>();
 
@@ -68,6 +68,24 @@ public class Bullet : MonoBehaviour
         {
             // Enemy 데미지
             enemy.TakeDamage(damage);
+
+            // 총알 삭제
+            Destroy(gameObject);
+
+            return;
+        }
+
+        // 2. 맞은 오브젝트에서 탄창 상자(MagazineObject) 찾기 (추가된 부분)
+        MagazineObject box =
+            other.GetComponentInParent<MagazineObject>();
+
+        if (box != null)
+        {
+            // 탄창 상자 데미지
+            box.TakeDamage(damage);
+
+            // 타격 확인용 로그
+            Debug.Log($"<color=yellow>[Bullet] 총알이 상자를 타격했습니다! 데미지: {damage}</color>");
 
             // 총알 삭제
             Destroy(gameObject);

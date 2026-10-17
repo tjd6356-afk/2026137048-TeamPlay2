@@ -278,9 +278,9 @@ MonoBehaviour:
   topLookAheadDistance: 4
   topFollowSmoothTime: 0.12
   topOrthographicSize: 7
-  thirdPersonDistance: 5
+  thirdPersonDistance: 3.5
   thirdPersonHeight: 1.5
-  shoulderOffset: 0.7
+  shoulderOffset: 1.8
   mouseSensitivity: 0.15
   minPitch: -40
   maxPitch: 70
@@ -4593,7 +4593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1879808415
 RectTransform:
   m_ObjectHideFlags: 0

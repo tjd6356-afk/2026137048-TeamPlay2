@@ -305,23 +305,29 @@ public class PlayerViewCameraController : MonoBehaviour
 
     private void UpdateThirdPerson()
     {
-        // 고정 여부와 관계없이
-        // 마우스로 카메라는 항상 회전
+        // Lock 여부와 상관없이
+        // 마우스로 카메라는 계속 움직임
         ReadMouseLook();
 
         // =====================================
-        // Shift 고정 상태
+        // Shift Lock
         // =====================================
 
         if (thirdPersonViewLocked)
         {
-            // 카메라의 Y 회전 방향으로
-            // Player도 강제로 고정
-            player.rotation =
+
+            Quaternion targetRotation =
                 Quaternion.Euler(
                     0f,
                     yaw,
                     0f
+                );
+
+            player.rotation =
+                Quaternion.Slerp(
+                    player.rotation,
+                    targetRotation,
+                    15f * Time.deltaTime
                 );
         }
 
@@ -389,15 +395,27 @@ public class PlayerViewCameraController : MonoBehaviour
 
         if (thirdPersonViewLocked)
         {
-            // 고정 시작 순간
-            // 카메라 방향을 플레이어 방향에 맞춤
-            yaw = player.eulerAngles.y;
 
-            Debug.Log("Third Person View : LOCKED");
+            Quaternion targetRotation =
+                Quaternion.Euler(
+                    0f,
+                    yaw,
+                    0f
+                );
+
+            player.rotation =
+                targetRotation;
+
+            Debug.Log(
+                "Third Person : CAMERA LOCK"
+            );
         }
         else
         {
-            Debug.Log("Third Person View : FREE");
+            // 해제할 때도 카메라 방향은 건드리지 않음
+            Debug.Log(
+                "Third Person : FREE CAMERA"
+            );
         }
     }
 }

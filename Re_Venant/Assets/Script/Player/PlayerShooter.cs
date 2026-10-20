@@ -65,6 +65,9 @@ public class PlayerShooter : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale <= 0f)
+            return;
+
         if (Mouse.current == null)
             return;
 
@@ -74,7 +77,6 @@ public class PlayerShooter : MonoBehaviour
         if (bulletHealth.IsDead)
             return;
 
-        // 마우스를 누르고 있으면 발사속도에 맞춰 계속 발사
         if (Mouse.current.leftButton.isPressed &&
             Time.time >= nextFireTime)
         {

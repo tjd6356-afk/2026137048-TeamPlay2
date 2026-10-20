@@ -63,6 +63,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale <= 0f)
+        {
+            moveInput = Vector2.zero;
+            jumpRequested = false;
+
+            animationController?.SetMoving(false);
+
+            return;
+        }
+
         ReadMovementInput();
         ReadJumpInput();
 
@@ -76,6 +86,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Time.timeScale <= 0f)
+            return;
+
+        Move();
+
+        if (jumpRequested)
+        {
+            Jump();
+
+            jumpRequested = false;
+        }
+
         Move();
 
         if (jumpRequested)

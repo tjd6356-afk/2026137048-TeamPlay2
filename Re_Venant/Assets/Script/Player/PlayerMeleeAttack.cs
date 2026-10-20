@@ -67,6 +67,9 @@ public class PlayerMeleeAttack : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale <= 0f)
+            return;
+
         if (Mouse.current == null)
             return;
 

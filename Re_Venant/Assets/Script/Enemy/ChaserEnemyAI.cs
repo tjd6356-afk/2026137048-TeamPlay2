@@ -55,6 +55,9 @@ public class ChaserEnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale <= 0f)
+            return;
+
         // Player가 이미 삭제되었거나 존재하지 않음
         if (player == null)
         {

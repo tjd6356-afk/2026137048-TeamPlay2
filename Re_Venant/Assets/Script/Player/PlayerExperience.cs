@@ -10,6 +10,11 @@ public class PlayerExperience : MonoBehaviour
     [SerializeField] private int currentExp = 0;
     [SerializeField] private int baseRequiredExp = 10;
 
+    [Header("Experience Multiplier")]
+    [SerializeField] private float experienceMultiplier = 1f;
+
+    public float ExperienceMultiplier => experienceMultiplier;
+
     [Header("Level Scaling")]
     [SerializeField] private float requiredExpMultiplier = 1.5f;
 
@@ -41,15 +46,36 @@ public class PlayerExperience : MonoBehaviour
         if (amount <= 0)
             return;
 
-        currentExp += amount;
+        // 설정된 경험치 배율 적용
+        int finalAmount =
+            Mathf.Max(
+                1,
+                Mathf.RoundToInt(
+                    amount * experienceMultiplier
+                )
+            );
+
+        currentExp += finalAmount;
 
         Debug.Log(
-            $"EXP +{amount} / {currentExp} / {requiredExp}"
+            $"EXP +{finalAmount} " +
+            $"(Base {amount} x {experienceMultiplier}) / " +
+            $"{currentExp} / {requiredExp}"
         );
 
         CheckLevelUp();
 
         NotifyUI();
+    }
+
+    public void SetExperienceMultiplier(float multiplier)
+    {
+        experienceMultiplier =
+            Mathf.Max(1f, multiplier);
+
+        Debug.Log(
+            $"EXP 배율 변경 : x{experienceMultiplier}"
+        );
     }
 
     private void CheckLevelUp()

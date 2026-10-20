@@ -2265,6 +2265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8df968756eed4294390c49b5034e92c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelUpManager
+  viewModeManager: {fileID: 1427846234}
   playerExperience: {fileID: 1427846232}
   upgradeController: {fileID: 1427846233}
   bulletHealth: {fileID: 1427846231}
@@ -4674,7 +4675,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   rotationSpeed: 12
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 21280973}
 --- !u!54 &1427846224
 Rigidbody:
   m_ObjectHideFlags: 0

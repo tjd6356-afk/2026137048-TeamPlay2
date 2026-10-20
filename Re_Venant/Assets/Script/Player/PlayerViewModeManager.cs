@@ -45,9 +45,26 @@ public class PlayerViewModeManager : MonoBehaviour
 
     private void Update()
     {
-        // 레벨업 / 게임오버 중에는 전환 방지
+        // ==========================================
+        // 게임이 정지된 상태
+        // LevelUp / Setting / GameOver
+        // ==========================================
+
         if (Time.timeScale <= 0f)
+        {
+            Cursor.lockState =
+                CursorLockMode.None;
+
+            Cursor.visible = true;
+
             return;
+        }
+
+        // ==========================================
+        // 게임이 정상 진행 중
+        // ==========================================
+
+        UpdateCursorState();
 
         if (Keyboard.current == null)
             return;

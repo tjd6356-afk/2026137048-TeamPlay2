@@ -5,6 +5,10 @@ using TMPro;
 
 public class LevelUpManager : MonoBehaviour
 {
+    [Header("View")]
+    [SerializeField]
+    private PlayerViewModeManager viewModeManager;
+
     [Header("Player")]
     [SerializeField]
     private PlayerExperience playerExperience;
@@ -86,6 +90,12 @@ public class LevelUpManager : MonoBehaviour
                 RerollCards
             );
         }
+
+        if (viewModeManager == null)
+        {
+            viewModeManager =
+                FindFirstObjectByType<PlayerViewModeManager>();
+        }
     }
 
     private void OnDestroy()
@@ -127,13 +137,27 @@ public class LevelUpManager : MonoBehaviour
             levelUpPanel.SetActive(true);
         }
 
-        // 새로운 레벨업이므로
-        // 무료 리롤 초기화
         ResetRerolls();
 
         RollCards();
 
+        // 게임 정지
         Time.timeScale = 0f;
+
+        // UI 조작용 마우스 활성화
+        if (viewModeManager != null)
+        {
+            viewModeManager.SetUIMode(true);
+        }
+        else
+        {
+            Cursor.lockState =
+                CursorLockMode.None;
+
+            Cursor.visible = true;
+        }
+
+        Debug.Log("LEVEL UP - GAME PAUSED");
     }
 
     // =========================================
@@ -356,6 +380,15 @@ public class LevelUpManager : MonoBehaviour
             levelUpPanel.SetActive(false);
         }
 
+        // 게임 재개
         Time.timeScale = 1f;
+
+        // 현재 시점에 맞는 마우스 상태로 복구
+        if (viewModeManager != null)
+        {
+            viewModeManager.SetUIMode(false);
+        }
+
+        Debug.Log("LEVEL UP COMPLETE - GAME RESUMED");
     }
 }

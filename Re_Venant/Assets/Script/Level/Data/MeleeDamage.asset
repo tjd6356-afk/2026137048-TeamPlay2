@@ -17,4 +17,4 @@ MonoBehaviour:
   icon: {fileID: 0}
   upgradeType: 2
   intValue: 1
-  floatValue: 10
+  floatValue: 20

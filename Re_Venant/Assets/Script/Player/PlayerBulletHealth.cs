@@ -162,4 +162,37 @@ public class PlayerBulletHealth : MonoBehaviour
             $"Max Bullet 증가 : {maxBullets}"
         );
     }
+
+    public bool SpendBulletsForReroll(int amount)
+    {
+        if (isDead)
+            return false;
+
+        if (amount <= 0)
+            return true;
+
+        currentBullets -= amount;
+
+        currentBullets = Mathf.Clamp(
+            currentBullets,
+            0,
+            maxBullets
+        );
+
+        NotifyBulletsChanged();
+
+        Debug.Log(
+            $"리롤 비용 -{amount} / Bullet : {currentBullets} / {maxBullets}"
+        );
+
+        // 리롤 비용 때문에 총알이 0이 됨
+        if (currentBullets <= 0)
+        {
+            Die();
+
+            return false;
+        }
+
+        return true;
+    }
 }

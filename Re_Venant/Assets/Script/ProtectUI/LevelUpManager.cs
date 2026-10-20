@@ -1,14 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class LevelUpManager : MonoBehaviour
 {
     [Header("Player")]
-    [SerializeField] private PlayerExperience playerExperience;
-    [SerializeField] private PlayerUpgradeController upgradeController;
+    [SerializeField]
+    private PlayerExperience playerExperience;
+
+    [SerializeField]
+    private PlayerUpgradeController upgradeController;
+
+    [SerializeField]
+    private PlayerBulletHealth bulletHealth;
 
     [Header("UI")]
-    [SerializeField] private GameObject levelUpPanel;
+    [SerializeField]
+    private GameObject levelUpPanel;
 
     [Header("Cards")]
     [SerializeField]
@@ -19,13 +28,25 @@ public class LevelUpManager : MonoBehaviour
     private List<LevelUpCardUI> cardSlots =
         new List<LevelUpCardUI>();
 
-    [Header("View")]
+    [Header("Reroll")]
     [SerializeField]
-    private PlayerViewModeManager viewModeManager;
+    private Button rerollButton;
+
+    [SerializeField]
+    private TMP_Text rerollText;
+
+    [SerializeField]
+    private int freeRerollsPerLevel = 1;
+
+    [SerializeField]
+    private int rerollBulletCost = 10;
+
+    private int freeRerollsRemaining;
 
     private bool isLevelUpOpen = false;
 
-    // 한번에 여러 레벨업을 했을 때 저장
+    // 경험치를 많이 먹어서
+    // 레벨업이 여러 번 예약되었을 경우
     private int pendingLevelUps = 0;
 
     private void Start()
@@ -42,6 +63,12 @@ public class LevelUpManager : MonoBehaviour
                 FindFirstObjectByType<PlayerUpgradeController>();
         }
 
+        if (bulletHealth == null)
+        {
+            bulletHealth =
+                FindFirstObjectByType<PlayerBulletHealth>();
+        }
+
         if (levelUpPanel != null)
         {
             levelUpPanel.SetActive(false);
@@ -53,10 +80,11 @@ public class LevelUpManager : MonoBehaviour
                 OnPlayerLevelUp;
         }
 
-        if (viewModeManager == null)
+        if (rerollButton != null)
         {
-            viewModeManager =
-                FindFirstObjectByType<PlayerViewModeManager>();
+            rerollButton.onClick.AddListener(
+                RerollCards
+            );
         }
     }
 
@@ -67,7 +95,18 @@ public class LevelUpManager : MonoBehaviour
             playerExperience.OnLevelUp -=
                 OnPlayerLevelUp;
         }
+
+        if (rerollButton != null)
+        {
+            rerollButton.onClick.RemoveListener(
+                RerollCards
+            );
+        }
     }
+
+    // =========================================
+    // LEVEL UP
+    // =========================================
 
     private void OnPlayerLevelUp()
     {
@@ -88,23 +127,26 @@ public class LevelUpManager : MonoBehaviour
             levelUpPanel.SetActive(true);
         }
 
-        RollCards();
+        // 새로운 레벨업이므로
+        // 무료 리롤 초기화
+        ResetRerolls();
 
-        // 레벨업 UI에서는 마우스 사용 가능
-        if (viewModeManager != null)
-        {
-            viewModeManager.SetUIMode(true);
-        }
+        RollCards();
 
         Time.timeScale = 0f;
     }
+
+    // =========================================
+    // CARD RANDOM
+    // =========================================
 
     private void RollCards()
     {
         List<UpgradeCardData> pool =
             new List<UpgradeCardData>();
 
-        foreach (UpgradeCardData card in availableCards)
+        foreach (UpgradeCardData card
+                 in availableCards)
         {
             if (card != null)
             {
@@ -112,7 +154,9 @@ public class LevelUpManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < cardSlots.Count; i++)
+        for (int i = 0;
+             i < cardSlots.Count;
+             i++)
         {
             LevelUpCardUI slot =
                 cardSlots[i];
@@ -123,6 +167,7 @@ public class LevelUpManager : MonoBehaviour
             if (pool.Count == 0)
             {
                 slot.gameObject.SetActive(false);
+
                 continue;
             }
 
@@ -134,22 +179,147 @@ public class LevelUpManager : MonoBehaviour
                     pool.Count
                 );
 
-            UpgradeCardData selected =
+            UpgradeCardData selectedCard =
                 pool[randomIndex];
 
+            // 같은 카드가 같은 3장 안에서
+            // 중복 등장하지 않도록 제거
             pool.RemoveAt(randomIndex);
 
             slot.Setup(
-                selected,
+                selectedCard,
                 this
             );
         }
     }
 
+    // =========================================
+    // REROLL
+    // =========================================
+
+    private void ResetRerolls()
+    {
+        freeRerollsRemaining =
+            freeRerollsPerLevel;
+
+        UpdateRerollUI();
+    }
+
+    private void RerollCards()
+    {
+        if (!isLevelUpOpen)
+            return;
+
+        if (bulletHealth == null)
+            return;
+
+        if (bulletHealth.IsDead)
+            return;
+
+        // -------------------------------------
+        // 무료 리롤
+        // -------------------------------------
+
+        if (freeRerollsRemaining > 0)
+        {
+            freeRerollsRemaining--;
+
+            Debug.Log("무료 리롤 사용");
+
+            RollCards();
+
+            UpdateRerollUI();
+
+            return;
+        }
+
+        // -------------------------------------
+        // 유료 리롤
+        // -------------------------------------
+
+        Debug.Log(
+            $"유료 리롤 : 탄환 {rerollBulletCost} 소모"
+        );
+
+        bool survived =
+            bulletHealth.SpendBulletsForReroll(
+                rerollBulletCost
+            );
+
+        // 리롤 비용으로 Player가 사망
+        if (!survived)
+        {
+            HandleRerollDeath();
+
+            return;
+        }
+
+        // 살아있다면 카드 다시 생성
+        RollCards();
+
+        UpdateRerollUI();
+    }
+
+    private void UpdateRerollUI()
+    {
+        if (rerollText == null)
+            return;
+
+        if (freeRerollsRemaining > 0)
+        {
+            rerollText.text =
+                $"무료 리롤 ({freeRerollsRemaining})";
+        }
+        else
+        {
+            int currentBullets = 0;
+
+            if (bulletHealth != null)
+            {
+                currentBullets =
+                    bulletHealth.CurrentBullets;
+            }
+
+            rerollText.text =
+                $"리롤  -{rerollBulletCost} 탄환\n" +
+                $"현재 {currentBullets}";
+        }
+    }
+
+    private void HandleRerollDeath()
+    {
+        // PlayerBulletHealth.Die()에서
+        // 이미 GameOverManager.GameOver()가 실행됨.
+
+        // LevelUpPanel이 GameOverPanel과
+        // 겹쳐 보이지 않도록 숨김
+        if (levelUpPanel != null)
+        {
+            levelUpPanel.SetActive(false);
+        }
+
+        isLevelUpOpen = false;
+
+        // 중요:
+        // 여기서는 Time.timeScale = 1을 하면 안 됨.
+        // GameOver 상태이므로 계속 정지 상태여야 함.
+
+        Debug.Log(
+            "리롤 비용으로 Player가 사망했습니다."
+        );
+    }
+
+    // =========================================
+    // CARD SELECT
+    // =========================================
+
     public void SelectCard(
         UpgradeCardData card)
     {
         if (!isLevelUpOpen)
+            return;
+
+        if (card == null)
             return;
 
         if (upgradeController != null)
@@ -161,11 +331,16 @@ public class LevelUpManager : MonoBehaviour
 
         pendingLevelUps--;
 
-        // 레벨업이 여러 번 쌓여있으면
-        // 다시 카드 3장 표시
+        // 경험치를 한번에 많이 먹어서
+        // 또 레벨업해야 하는 경우
         if (pendingLevelUps > 0)
         {
+            // 다음 Level Up이므로
+            // 무료 리롤도 다시 지급
+            ResetRerolls();
+
             RollCards();
+
             return;
         }
 
@@ -179,12 +354,6 @@ public class LevelUpManager : MonoBehaviour
         if (levelUpPanel != null)
         {
             levelUpPanel.SetActive(false);
-        }
-
-        // 현재 시점에 맞게 마우스 상태 복원
-        if (viewModeManager != null)
-        {
-            viewModeManager.SetUIMode(false);
         }
 
         Time.timeScale = 1f;

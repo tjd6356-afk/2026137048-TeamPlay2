@@ -2286,8 +2286,8 @@ MonoBehaviour:
   - {fileID: 1497032936}
   rerollButton: {fileID: 1091488988}
   rerollText: {fileID: 369092738}
-  freeRerollsPerLevel: 1
   rerollBulletCost: 10
+  baseFreeRerollsPerLevel: 1
 --- !u!114 &685253564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3035,11 +3035,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 537b2ed6dbbdf32478cacadb87f7724b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefabs:
-  - {fileID: 7688493035254335089, guid: 0d09e3b7f6cabb74e977e5876ad70603, type: 3}
-  - {fileID: 2004219544731539525, guid: ade3418369a46e843bdad2b822b57014, type: 3}
+  waves:
+  - {fileID: 11400000, guid: 4a523988d4520d64aa25a78dd4f12f05, type: 2}
   protect: {fileID: 1421274941}
-  spawnInterval: 2
   minSpawnRadius: 8
   maxSpawnRadius: 30
   navMeshSearchRadius: 3

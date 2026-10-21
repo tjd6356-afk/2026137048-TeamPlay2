@@ -42,6 +42,19 @@ public class LevelUpManager : MonoBehaviour
     [SerializeField]
     private int freeRerollsPerLevel = 1;
 
+    public void IncreaseFreeRerollsPerLevel(
+    int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        freeRerollsPerLevel += amount;
+
+        Debug.Log(
+            $"무료 리롤 횟수 증가 : {freeRerollsPerLevel}"
+        );
+    }
+
     [SerializeField]
     private int rerollBulletCost = 10;
 

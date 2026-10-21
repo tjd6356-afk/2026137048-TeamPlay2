@@ -12,6 +12,11 @@ public class ScoreManager : MonoBehaviour
     [Header("Game Over UI")]
     [SerializeField] private TMP_Text finalScoreText;
 
+    [Header("Score Multiplier")]
+    [SerializeField] private float scoreMultiplier = 1f;
+
+    public float ScoreMultiplier =>
+        scoreMultiplier;
     private float survivalTime = 0f;
     private float secondTimer = 0f;
 
@@ -47,8 +52,14 @@ public class ScoreManager : MonoBehaviour
         {
             secondTimer -= 1f;
 
+            int gainedScore =
+            Mathf.RoundToInt(
+                survivalPointsPerSecond *
+                scoreMultiplier
+            );
+
             survivalScore +=
-                survivalPointsPerSecond;
+                gainedScore;
 
             UpdateCurrentScoreUI();
         }
@@ -63,10 +74,19 @@ public class ScoreManager : MonoBehaviour
         if (score <= 0)
             return;
 
-        killScore += score;
+        int finalScore =
+            Mathf.RoundToInt(
+                score *
+                scoreMultiplier
+            );
+
+        killScore +=
+            finalScore;
 
         Debug.Log(
-            $"Enemy Kill +{score} / Total Score : {TotalScore}"
+            $"Enemy Kill : Base {score} " +
+            $"x {scoreMultiplier} " +
+            $"= +{finalScore}"
         );
 
         UpdateCurrentScoreUI();
@@ -112,5 +132,18 @@ public class ScoreManager : MonoBehaviour
             $"SURVIVAL SCORE  {survivalScore}\n" +
             $"KILL SCORE  {killScore}\n\n" +
             $"FINAL SCORE  {TotalScore}";
+    }
+
+    public void IncreaseScoreMultiplier(
+    float amount)
+    {
+        if (amount <= 0f)
+            return;
+
+        scoreMultiplier += amount;
+
+        Debug.Log(
+            $"Score Multiplier : x{scoreMultiplier}"
+        );
     }
 }

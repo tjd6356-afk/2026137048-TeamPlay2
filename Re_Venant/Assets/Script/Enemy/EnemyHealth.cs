@@ -11,6 +11,8 @@ public class EnemyHealth : MonoBehaviour
     [Header("Experience Drop")]
     [SerializeField] private GameObject experiencePrefab;
     [SerializeField] private int experienceAmount = 3;
+
+    private PlayerUpgradeController upgradeController;
     private float currentHealth;
     private bool isDead = false;
 
@@ -29,6 +31,9 @@ public class EnemyHealth : MonoBehaviour
     {
         scoreManager =
             FindFirstObjectByType<ScoreManager>();
+
+        upgradeController =
+            FindFirstObjectByType<PlayerUpgradeController>();
     }
 
     public void TakeDamage(float damage)
@@ -85,6 +90,18 @@ public class EnemyHealth : MonoBehaviour
         if (experiencePrefab == null)
             return;
 
+        int finalExperienceAmount =
+            experienceAmount;
+
+        // 경험치 Orb 강화 카드 적용
+        if (upgradeController != null)
+        {
+            finalExperienceAmount =
+                upgradeController.GetModifiedExperienceAmount(
+                    experienceAmount
+                );
+        }
+
         GameObject expObject =
             Instantiate(
                 experiencePrefab,
@@ -98,8 +115,12 @@ public class EnemyHealth : MonoBehaviour
         if (expOrb != null)
         {
             expOrb.SetExperience(
-                experienceAmount
+                finalExperienceAmount
             );
         }
+
+        Debug.Log(
+            $"EXP Orb Drop : {finalExperienceAmount}"
+        );
     }
 }

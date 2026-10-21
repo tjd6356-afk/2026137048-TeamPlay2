@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f3b74a3b5a83ab468d3dc513246ddf1, type: 3}
+  m_Name: ExperienceOrbAmount
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeCardData
+  cardName: "\uACBD\uD5D8\uCE58 \uB7C9 \uC99D\uAC00"
+  description: "\uC801\uB4E4\uC774 \uB5A8\uC5B4\uD2B8\uB9AC\uB294 \uACBD\uD5D8\uCE58
+    \uB7C9\uC744 \uC99D\uAC00 \uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: 0}
+  upgradeType: 5
+  intValue: 1
+  floatValue: 0.5

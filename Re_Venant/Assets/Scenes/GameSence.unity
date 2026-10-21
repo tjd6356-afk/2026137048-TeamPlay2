@@ -1957,8 +1957,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &592657804
 MonoBehaviour:
@@ -2253,6 +2253,7 @@ MonoBehaviour:
   survivalPointsPerSecond: 10
   currentScoreText: {fileID: 1879808416}
   finalScoreText: {fileID: 249054198}
+  scoreMultiplier: 1
 --- !u!114 &685253563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2276,6 +2277,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 68c3e876747009343b42af6fa362f73b, type: 2}
   - {fileID: 11400000, guid: d6022038007654348a096dad9ebf70d6, type: 2}
   - {fileID: 11400000, guid: 78f0cc1881ddcc84bb82e816a45444fc, type: 2}
+  - {fileID: 11400000, guid: e20207f1cd72a1d4292c1d280f111225, type: 2}
+  - {fileID: 11400000, guid: bc3bbdcc2fbbe5d4c8901edae61b6da5, type: 2}
+  - {fileID: 11400000, guid: 79384cca738480149a04d60a61e078c5, type: 2}
   cardSlots:
   - {fileID: 1967632428}
   - {fileID: 1370700395}
@@ -3765,8 +3769,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1213751037
 MonoBehaviour:
@@ -4945,9 +4949,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb16cfa030b108428d0eb2150000fd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUpgradeController
+  scoreManager: {fileID: 0}
+  levelUpManager: {fileID: 0}
   bulletHealth: {fileID: 1427846231}
   shooter: {fileID: 1427846225}
   meleeAttack: {fileID: 1427846230}
+  experienceOrbMultiplier: 1
 --- !u!114 &1427846234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5231,8 +5238,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1517965046
 MonoBehaviour:

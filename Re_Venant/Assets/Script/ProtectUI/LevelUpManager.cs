@@ -39,8 +39,17 @@ public class LevelUpManager : MonoBehaviour
     [SerializeField]
     private TMP_Text rerollText;
 
-    [SerializeField]
-    private int freeRerollsPerLevel = 1;
+    // 카드로 영구적으로 증가하는 무료 리롤 횟수
+    private int bonusFreeRerollsPerLevel = 0;
+
+    // 현재 레벨업 화면에서 남아있는 무료 리롤
+    private int freeRerollsRemaining = 0;
+
+
+    // 현재 총 무료 리롤 횟수
+    public int TotalFreeRerollsPerLevel =>
+        baseFreeRerollsPerLevel +
+        bonusFreeRerollsPerLevel;
 
     public void IncreaseFreeRerollsPerLevel(
     int amount)
@@ -48,17 +57,21 @@ public class LevelUpManager : MonoBehaviour
         if (amount <= 0)
             return;
 
-        freeRerollsPerLevel += amount;
+        bonusFreeRerollsPerLevel += amount;
 
         Debug.Log(
-            $"무료 리롤 횟수 증가 : {freeRerollsPerLevel}"
+            $"무료 리롤 카드 획득! " +
+            $"기본 {baseFreeRerollsPerLevel} + " +
+            $"보너스 {bonusFreeRerollsPerLevel} = " +
+            $"다음 레벨업부터 {TotalFreeRerollsPerLevel}회"
         );
     }
 
     [SerializeField]
     private int rerollBulletCost = 10;
 
-    private int freeRerollsRemaining;
+    [SerializeField]
+    private int baseFreeRerollsPerLevel = 1;
 
     private bool isLevelUpOpen = false;
 
@@ -237,7 +250,13 @@ public class LevelUpManager : MonoBehaviour
     private void ResetRerolls()
     {
         freeRerollsRemaining =
-            freeRerollsPerLevel;
+            TotalFreeRerollsPerLevel;
+
+        Debug.Log(
+            $"무료 리롤 초기화 : {freeRerollsRemaining}회 " +
+            $"(기본 {baseFreeRerollsPerLevel} + " +
+            $"카드 보너스 {bonusFreeRerollsPerLevel})"
+        );
 
         UpdateRerollUI();
     }
@@ -318,7 +337,7 @@ public class LevelUpManager : MonoBehaviour
             }
 
             rerollText.text =
-                $"리롤  -{rerollBulletCost} 탄환\n" +
+                $"리롤 -{rerollBulletCost} 탄환\n" +
                 $"현재 {currentBullets}";
         }
     }

@@ -15,6 +15,6 @@ MonoBehaviour:
   cardName: "\uBB34\uB8CC \uB9AC\uB864"
   description: "\uBB34\uB8CC\uB85C \uB9AC\uB864 \uD558\uB294 \uD69F\uC218\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 7
   intValue: 1
   floatValue: 1

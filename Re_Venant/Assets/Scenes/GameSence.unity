@@ -3036,7 +3036,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   waves:
-  - {fileID: 11400000, guid: 4a523988d4520d64aa25a78dd4f12f05, type: 2}
+  - {fileID: 11400000, guid: 51e2e78799db2454fa4df55298d16d92, type: 2}
+  - {fileID: 11400000, guid: 437cedb5b2526ee4d90fe75ea51e3dd3, type: 2}
   protect: {fileID: 1421274941}
   minSpawnRadius: 8
   maxSpawnRadius: 30

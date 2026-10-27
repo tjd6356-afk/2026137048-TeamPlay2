@@ -4807,7 +4807,7 @@ MonoBehaviour:
   currentExp: 0
   baseRequiredExp: 10
   experienceMultiplier: 1
-  requiredExpMultiplier: 1.5
+  requiredExpMultiplier: 1.25
 --- !u!114 &1427846233
 MonoBehaviour:
   m_ObjectHideFlags: 0

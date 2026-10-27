@@ -204,7 +204,8 @@ MonoBehaviour:
   maxHealth: 50
   killScore: 100
   experiencePrefab: {fileID: 2684788365753737516, guid: 52db4f4b243b32c4f8404983cec6de6e, type: 3}
-  experienceAmount: 3
+  experienceAmount: 2
+  hitVisual: {fileID: 0}
 --- !u!65 &7890094447218914480
 BoxCollider:
   m_ObjectHideFlags: 0

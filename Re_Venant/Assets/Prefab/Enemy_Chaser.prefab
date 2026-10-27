@@ -115,7 +115,8 @@ MonoBehaviour:
   maxHealth: 150
   killScore: 100
   experiencePrefab: {fileID: 2684788365753737516, guid: 52db4f4b243b32c4f8404983cec6de6e, type: 3}
-  experienceAmount: 3
+  experienceAmount: 4
+  hitVisual: {fileID: 0}
 --- !u!65 &3904122633955284228
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -224,6 +225,7 @@ GameObject:
   - component: {fileID: 8838190949522130268}
   - component: {fileID: 4434987253716434109}
   - component: {fileID: 2862264584745616375}
+  - component: {fileID: 8635258096183636920}
   - component: {fileID: 7336646327909677653}
   m_Layer: 5
   m_Name: MonsterCanvas
@@ -315,6 +317,25 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8635258096183636920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8120283387977325970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e968cbbaa9238054598f0367df75c4b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterHitVisual
+  monsterImage: {fileID: 4929123763373770164}
+  defaultSprite: {fileID: -2201786088624999606, guid: 1952ef0fd11259a4eaa9d4a68fcee3b3, type: 3}
+  hitSprite: {fileID: 9195937408186329957, guid: def811f60cdfc3b41b821775009b5a2f, type: 3}
+  hitSpriteDuration: 3
+  hitAlpha: 0.1
+  fadeOutDuration: 0.08
+  fadeInDuration: 0.12
 --- !u!114 &7336646327909677653
 MonoBehaviour:
   m_ObjectHideFlags: 0

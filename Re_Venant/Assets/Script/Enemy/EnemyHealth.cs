@@ -12,6 +12,9 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private GameObject experiencePrefab;
     [SerializeField] private int experienceAmount = 3;
 
+    [Header("Hit Visual")]
+    [SerializeField] private MonsterHitVisual hitVisual;
+
     private PlayerUpgradeController upgradeController;
     private float currentHealth;
     private bool isDead = false;
@@ -25,6 +28,12 @@ public class EnemyHealth : MonoBehaviour
     private void Awake()
     {
         currentHealth = maxHealth;
+
+        if (hitVisual == null)
+        {
+            hitVisual =
+                GetComponentInChildren<MonsterHitVisual>();
+        }
     }
 
     private void Start()
@@ -55,6 +64,15 @@ public class EnemyHealth : MonoBehaviour
         Debug.Log(
             $"Enemy Damage : {damage} / HP : {currentHealth} / {maxHealth}"
         );
+
+        // 살아남은 공격이면 피격 연출 실행
+        if (currentHealth > 0f)
+        {
+            if (hitVisual != null)
+            {
+                hitVisual.PlayHitEffect();
+            }
+        }
 
         if (currentHealth <= 0f)
         {

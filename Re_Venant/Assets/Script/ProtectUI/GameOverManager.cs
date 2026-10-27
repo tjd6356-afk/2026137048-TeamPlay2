@@ -12,6 +12,10 @@ public class GameOverManager : MonoBehaviour
     [Header("View")]
     [SerializeField] private PlayerViewModeManager viewModeManager;
 
+    [Header("Game Over Animation")]
+    [SerializeField]
+    private GameOverUIAnimator gameOverUIAnimator;
+
     private bool isGameOver = false;
 
     private void Awake()
@@ -43,34 +47,59 @@ public class GameOverManager : MonoBehaviour
 
         isGameOver = true;
 
-        // 최종 점수 계산
+        // 최종 점수 확정
         if (scoreManager != null)
         {
             scoreManager.FinishGame();
         }
 
-        // 게임 오버 패널 표시
+        // GameOverPanel 활성화
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
         }
 
-        // ==============================
-        // 마우스를 UI 조작 가능 상태로 변경
-        // ==============================
+        // UI 레이아웃 위치 즉시 갱신
+        Canvas.ForceUpdateCanvases();
+
+        // GameOverUIAnimator가 Inspector에 연결되지 않았으면
+        // GameOverPanel 내부에서 자동 검색
+        if (gameOverUIAnimator == null &&
+            gameOverPanel != null)
+        {
+            gameOverUIAnimator =
+                gameOverPanel.GetComponentInChildren<GameOverUIAnimator>(true);
+        }
+
+        // 마우스 활성화
         if (viewModeManager != null)
         {
             viewModeManager.SetUIMode(true);
         }
         else
         {
-            // 안전장치
-            Cursor.lockState = CursorLockMode.None;
+            Cursor.lockState =
+                CursorLockMode.None;
+
             Cursor.visible = true;
         }
 
         // 게임 정지
         Time.timeScale = 0f;
+
+        // GameOver 연출
+        if (gameOverUIAnimator != null)
+        {
+            Debug.Log("GameOver Animation START");
+
+            gameOverUIAnimator.PlayGameOverAnimation();
+        }
+        else
+        {
+            Debug.LogError(
+                "GameOverUIAnimator를 찾지 못했습니다!"
+            );
+        }
 
         Debug.Log("GAME OVER");
     }

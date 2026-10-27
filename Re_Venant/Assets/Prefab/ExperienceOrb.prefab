@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d093f02b8e09e74da696b24240d1ac5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExperienceOrb
-  experienceAmount: 1
+  experienceAmount: 3
   attractionRange: 4
   moveSpeed: 8
   acceleration: 15

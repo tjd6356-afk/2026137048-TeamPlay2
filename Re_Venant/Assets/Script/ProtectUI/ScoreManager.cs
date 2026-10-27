@@ -121,17 +121,8 @@ public class ScoreManager : MonoBehaviour
         if (finalScoreText == null)
             return;
 
-        int minutes =
-            Mathf.FloorToInt(survivalTime / 60f);
-
-        int seconds =
-            Mathf.FloorToInt(survivalTime % 60f);
-
         finalScoreText.text =
-            $"SURVIVAL  {minutes:00}:{seconds:00}\n" +
-            $"SURVIVAL SCORE  {survivalScore}\n" +
-            $"KILL SCORE  {killScore}\n\n" +
-            $"FINAL SCORE  {TotalScore}";
+            $"FINAL SCORE\n{TotalScore}";
     }
 
     public void IncreaseScoreMultiplier(

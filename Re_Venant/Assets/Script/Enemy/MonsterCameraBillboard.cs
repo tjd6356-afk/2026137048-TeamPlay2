@@ -40,7 +40,7 @@ public class MonsterCameraBillboard : MonoBehaviour
     private void UpdateFacing()
     {
         // =========================================
-        // 1. 몬스터가 화면의 어느 위치에 있는지 계산
+        // 1. 화면에서 몬스터의 좌우 위치 계산
         // =========================================
 
         Vector3 viewportPosition =
@@ -48,11 +48,9 @@ public class MonsterCameraBillboard : MonoBehaviour
                 transform.position
             );
 
-        // viewport:
-        //
-        // 왼쪽 = 0
-        // 중앙 = 0.5
-        // 오른쪽 = 1
+        // 왼쪽  = -1
+        // 중앙  =  0
+        // 오른쪽 = +1
 
         float horizontalPosition =
             (viewportPosition.x - 0.5f) * 2f;
@@ -65,7 +63,7 @@ public class MonsterCameraBillboard : MonoBehaviour
             );
 
         // =========================================
-        // 2. 중앙에서는 기울기 0
+        // 2. 중앙 영역에서는 완전 정면
         // =========================================
 
         float absHorizontal =
@@ -84,7 +82,7 @@ public class MonsterCameraBillboard : MonoBehaviour
         }
 
         // =========================================
-        // 3. 좌우 기울기 계산
+        // 3. 화면 좌우에 따른 추가 Y 회전
         // =========================================
 
         float sideAngle =
@@ -98,28 +96,44 @@ public class MonsterCameraBillboard : MonoBehaviour
         }
 
         // =========================================
-        // 4. 먼저 Canvas가 카메라를 완전히 바라보게 함
+        // 4. 카메라 방향에서 위/아래 회전 제거
         // =========================================
 
-        Quaternion cameraFacingRotation =
+        Vector3 flatCameraForward =
+            targetCamera.transform.forward;
+
+        // 핵심:
+        // 카메라의 위/아래 방향을 무시
+        flatCameraForward.y = 0f;
+
+        if (flatCameraForward.sqrMagnitude < 0.001f)
+            return;
+
+        flatCameraForward.Normalize();
+
+        // World Space Canvas가
+        // 카메라 방향을 바라보게 함.
+        // 단, Y축으로만 회전.
+        Quaternion baseRotation =
             Quaternion.LookRotation(
-                -targetCamera.transform.forward,
-                targetCamera.transform.up
+                -flatCameraForward,
+                Vector3.up
             );
 
         // =========================================
-        // 5. 화면 좌우 위치에 따라 살짝 비틀기
+        // 5. 좌우 몬스터만 약간 비스듬하게
         // =========================================
 
         Quaternion sideRotation =
-            Quaternion.AngleAxis(
+            Quaternion.Euler(
+                0f,
                 sideAngle,
-                targetCamera.transform.up
+                0f
             );
 
         Quaternion targetRotation =
-            sideRotation *
-            cameraFacingRotation;
+            baseRotation *
+            sideRotation;
 
         // =========================================
         // 6. 부드럽게 회전
@@ -129,7 +143,8 @@ public class MonsterCameraBillboard : MonoBehaviour
             Quaternion.Slerp(
                 transform.rotation,
                 targetRotation,
-                rotationSpeed * Time.deltaTime
+                rotationSpeed *
+                Time.deltaTime
             );
     }
 }

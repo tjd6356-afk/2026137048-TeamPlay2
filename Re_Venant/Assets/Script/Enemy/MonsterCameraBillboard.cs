@@ -2,30 +2,39 @@ using UnityEngine;
 
 public class MonsterCameraBillboard : MonoBehaviour
 {
-    [Header("Camera")]
+    [Header("References")]
     [SerializeField] private Camera targetCamera;
 
-    [Header("Center Facing")]
-    [Tooltip("화면 중앙에서 이 범위 안에 있으면 카메라를 완전히 정면으로 봅니다.")]
+    [SerializeField]
+    private PlayerViewModeManager viewModeManager;
+
+    [Header("Third / First Person")]
     [Range(0f, 0.5f)]
     [SerializeField] private float centerDeadZone = 0.12f;
 
-    [Header("Side Tilt")]
-    [Tooltip("화면 좌우에 있을 때 최대 얼마나 비스듬하게 보일지")]
     [Range(0f, 60f)]
     [SerializeField] private float maxSideAngle = 30f;
 
-    [Tooltip("좌우 기울어지는 방향이 반대라면 체크")]
     [SerializeField] private bool invertSideAngle = false;
 
-    [Header("Smooth")]
+    [Header("Rotation")]
     [SerializeField] private float rotationSpeed = 12f;
+
+    [Header("Top View")]
+    [Tooltip("Top View에서 이미지가 거꾸로 보이면 180으로 바꿔보세요.")]
+    [SerializeField] private float topViewRotationOffset = 0f;
 
     private void Start()
     {
         if (targetCamera == null)
         {
             targetCamera = Camera.main;
+        }
+
+        if (viewModeManager == null)
+        {
+            viewModeManager =
+                FindFirstObjectByType<PlayerViewModeManager>();
         }
     }
 
@@ -34,14 +43,74 @@ public class MonsterCameraBillboard : MonoBehaviour
         if (targetCamera == null)
             return;
 
-        UpdateFacing();
+        // ViewModeManager가 없으면
+        // 기존 3D 방식으로 처리
+        if (viewModeManager == null)
+        {
+            UpdateThirdFirstPersonFacing();
+            return;
+        }
+
+        switch (viewModeManager.CurrentMode)
+        {
+            case PlayerViewMode.TopDown:
+
+                UpdateTopViewFacing();
+
+                break;
+
+
+            case PlayerViewMode.ThirdPerson:
+            case PlayerViewMode.FirstPerson:
+
+                UpdateThirdFirstPersonFacing();
+
+                break;
+        }
     }
 
-    private void UpdateFacing()
+    // ==================================================
+    // TOP VIEW
+    // ==================================================
+
+    private void UpdateTopViewFacing()
     {
-        // =========================================
-        // 1. 화면에서 몬스터의 좌우 위치 계산
-        // =========================================
+        if (targetCamera == null)
+            return;
+
+        // Top View에서는 몬스터 위치와 관계없이
+        // 모든 Canvas가 똑같이 카메라 화면을 바라봄.
+        Quaternion targetRotation =
+            Quaternion.LookRotation(
+                -targetCamera.transform.forward,
+                targetCamera.transform.up
+            );
+
+        // 필요하면 이미지 위/아래 방향만 보정
+        targetRotation *=
+            Quaternion.Euler(
+                0f,
+                0f,
+                topViewRotationOffset
+            );
+
+        transform.rotation =
+            Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+    }
+
+    // ==================================================
+    // THIRD PERSON / FIRST PERSON
+    // ==================================================
+
+    private void UpdateThirdFirstPersonFacing()
+    {
+        // ------------------------------------------
+        // 화면에서 몬스터 좌우 위치 계산
+        // ------------------------------------------
 
         Vector3 viewportPosition =
             targetCamera.WorldToViewportPoint(
@@ -62,9 +131,9 @@ public class MonsterCameraBillboard : MonoBehaviour
                 1f
             );
 
-        // =========================================
-        // 2. 중앙 영역에서는 완전 정면
-        // =========================================
+        // ------------------------------------------
+        // 중앙에서는 정면
+        // ------------------------------------------
 
         float absHorizontal =
             Mathf.Abs(horizontalPosition);
@@ -81,9 +150,9 @@ public class MonsterCameraBillboard : MonoBehaviour
                 );
         }
 
-        // =========================================
-        // 3. 화면 좌우에 따른 추가 Y 회전
-        // =========================================
+        // ------------------------------------------
+        // 화면 좌우에 따른 비스듬한 각도
+        // ------------------------------------------
 
         float sideAngle =
             horizontalPosition *
@@ -95,15 +164,13 @@ public class MonsterCameraBillboard : MonoBehaviour
             sideAngle *= -1f;
         }
 
-        // =========================================
-        // 4. 카메라 방향에서 위/아래 회전 제거
-        // =========================================
+        // ------------------------------------------
+        // 카메라의 위/아래 각도는 무시
+        // ------------------------------------------
 
         Vector3 flatCameraForward =
             targetCamera.transform.forward;
 
-        // 핵심:
-        // 카메라의 위/아래 방향을 무시
         flatCameraForward.y = 0f;
 
         if (flatCameraForward.sqrMagnitude < 0.001f)
@@ -111,18 +178,11 @@ public class MonsterCameraBillboard : MonoBehaviour
 
         flatCameraForward.Normalize();
 
-        // World Space Canvas가
-        // 카메라 방향을 바라보게 함.
-        // 단, Y축으로만 회전.
         Quaternion baseRotation =
             Quaternion.LookRotation(
                 -flatCameraForward,
                 Vector3.up
             );
-
-        // =========================================
-        // 5. 좌우 몬스터만 약간 비스듬하게
-        // =========================================
 
         Quaternion sideRotation =
             Quaternion.Euler(
@@ -134,10 +194,6 @@ public class MonsterCameraBillboard : MonoBehaviour
         Quaternion targetRotation =
             baseRotation *
             sideRotation;
-
-        // =========================================
-        // 6. 부드럽게 회전
-        // =========================================
 
         transform.rotation =
             Quaternion.Slerp(

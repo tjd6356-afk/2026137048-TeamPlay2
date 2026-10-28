@@ -2230,7 +2230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   survivalPointsPerSecond: 10
   useClearScore: 1
-  targetClearScore: 10000
+  targetClearScore: 100000
   clearSceneName: ClearScene
   currentScoreText: {fileID: 1879808416}
   finalScoreText: {fileID: 249054198}

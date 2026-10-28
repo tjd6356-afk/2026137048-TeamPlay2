@@ -23,6 +23,8 @@ MonoBehaviour:
     spawnWeight: 5
   - enemyPrefab: {fileID: 2004219544731539525, guid: 30ea6e03a5cf0c845823c3b7f434be34, type: 3}
     spawnWeight: 5
+  - enemyPrefab: {fileID: 7688493035254335089, guid: 482a3d43163cb304282c08f2f636ce49, type: 3}
+    spawnWeight: 5
   isFinalWave: 0
   intervalDecreaseRate: 0.05
   minSpawnIntervalLimit: 0.3

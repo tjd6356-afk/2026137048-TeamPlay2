@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameOverManager : MonoBehaviour
@@ -29,14 +29,12 @@ public class GameOverManager : MonoBehaviour
 
         if (scoreManager == null)
         {
-            scoreManager =
-                FindFirstObjectByType<ScoreManager>();
+            scoreManager = FindFirstObjectByType<ScoreManager>();
         }
 
         if (viewModeManager == null)
         {
-            viewModeManager =
-                FindFirstObjectByType<PlayerViewModeManager>();
+            viewModeManager = FindFirstObjectByType<PlayerViewModeManager>();
         }
     }
 
@@ -45,60 +43,51 @@ public class GameOverManager : MonoBehaviour
         if (isGameOver)
             return;
 
+        // â˜… ì¶”ê°€ëœ í•µì‹¬ ë°©ì–´ ì½”ë“œ â˜…
+        // ìŠ¤ì½”ì–´ ë§¤ë‹ˆì €ê°€ ì´ë¯¸ ê²Œì„ ì¢…ë£Œ(í´ë¦¬ì–´ ë“±)ë¥¼ ì„ ì–¸í–ˆë‹¤ë©´ ê²Œì„ ì˜¤ë²„ ì²˜ë¦¬ë¥¼ ë¬´ì‹œí•¨
+        if (scoreManager != null && scoreManager.IsGameEnded)
+            return;
+
         isGameOver = true;
 
-        // ÃÖÁ¾ Á¡¼ö È®Á¤
+        // ì´í•˜ ê¸°ì¡´ ì½”ë“œ ë™ì¼í•˜ê²Œ ìœ ì§€
         if (scoreManager != null)
         {
             scoreManager.FinishGame();
         }
 
-        // GameOverPanel È°¼ºÈ­
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
         }
 
-        // UI ·¹ÀÌ¾Æ¿ô À§Ä¡ Áï½Ã °»½Å
         Canvas.ForceUpdateCanvases();
 
-        // GameOverUIAnimator°¡ Inspector¿¡ ¿¬°áµÇÁö ¾Ê¾ÒÀ¸¸é
-        // GameOverPanel ³»ºÎ¿¡¼­ ÀÚµ¿ °Ë»ö
-        if (gameOverUIAnimator == null &&
-            gameOverPanel != null)
+        if (gameOverUIAnimator == null && gameOverPanel != null)
         {
-            gameOverUIAnimator =
-                gameOverPanel.GetComponentInChildren<GameOverUIAnimator>(true);
+            gameOverUIAnimator = gameOverPanel.GetComponentInChildren<GameOverUIAnimator>(true);
         }
 
-        // ¸¶¿ì½º È°¼ºÈ­
         if (viewModeManager != null)
         {
             viewModeManager.SetUIMode(true);
         }
         else
         {
-            Cursor.lockState =
-                CursorLockMode.None;
-
+            Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
-        // °ÔÀÓ Á¤Áö
         Time.timeScale = 0f;
 
-        // GameOver ¿¬Ãâ
         if (gameOverUIAnimator != null)
         {
             Debug.Log("GameOver Animation START");
-
             gameOverUIAnimator.PlayGameOverAnimation();
         }
         else
         {
-            Debug.LogError(
-                "GameOverUIAnimator¸¦ Ã£Áö ¸øÇß½À´Ï´Ù!"
-            );
+            Debug.LogError("GameOverUIAnimatorë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤!");
         }
 
         Debug.Log("GAME OVER");
@@ -106,25 +95,17 @@ public class GameOverManager : MonoBehaviour
 
     public void ReplayGame()
     {
-        // ½Ã°£ Á¤»óÈ­
         Time.timeScale = 1f;
-
-        // Cursorµµ ¿ì¼± Á¤»óÈ­
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Scene currentScene =
-            SceneManager.GetActiveScene();
-
-        SceneManager.LoadScene(
-            currentScene.buildIndex
-        );
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.buildIndex);
     }
 
     public void ExitGame()
     {
         Time.timeScale = 1f;
-
         Application.Quit();
 
 #if UNITY_EDITOR

@@ -24,18 +24,18 @@ public class PlayerMeleeAttack : MonoBehaviour
     [SerializeField] private float swingDuration = 0.25f;
 
     [Header("Attack Sound")]
-    [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip bryySound;
     [SerializeField] private AudioClip yahaSound;
 
     [Range(0f, 1f)]
     [SerializeField] private float attackSoundVolume = 1f;
 
+    [SerializeField] private float soundGap = 0f;
+
     private float meleeRangeMultiplier = 1f;
 
     private Vector3 baseWeaponScale;
     private Vector3 baseHitboxPointPosition;
-    private int attackSoundIndex = 0;
 
     private bool isAttacking = false;
 
@@ -56,12 +56,6 @@ public class PlayerMeleeAttack : MonoBehaviour
         {
             baseHitboxPointPosition =
                 hitboxPoint.localPosition;
-        }
-
-        if (audioSource == null)
-        {
-            audioSource =
-                GetComponent<AudioSource>();
         }
     }
 
@@ -94,11 +88,15 @@ public class PlayerMeleeAttack : MonoBehaviour
         if (hitboxPoint == null)
             return;
 
-        // 공격 음성 재생
-        PlayAttackSound();
+        // Bryy → Yaha
+        StartCoroutine(
+            PlayAttackSoundSequence()
+        );
 
-        // 실제 공격 실행
-        StartCoroutine(AttackRoutine());
+        // 근접 공격
+        StartCoroutine(
+            AttackRoutine()
+        );
     }
 
     private IEnumerator AttackRoutine()
@@ -232,28 +230,44 @@ public class PlayerMeleeAttack : MonoBehaviour
         }
     }
 
-    private void PlayAttackSound()
+    private IEnumerator PlayAttackSoundSequence()
     {
-        if (audioSource == null)
-            return;
+        if (GameAudioManager.Instance == null)
+            yield break;
 
-        AudioClip soundToPlay = null;
+        // =========================
+        // 1. Bryy
+        // =========================
 
-        if (attackSoundIndex == 0)
+        if (bryySound != null)
         {
-            soundToPlay = bryySound;
-            attackSoundIndex = 1;
+            GameAudioManager.Instance.PlaySFX(
+                bryySound,
+                attackSoundVolume
+            );
+
+            // Bryy가 끝날 때까지 기다림
+            yield return new WaitForSeconds(
+                bryySound.length
+            );
         }
-        else
+
+        // 두 음성 사이 추가 간격
+        if (soundGap > 0f)
         {
-            soundToPlay = yahaSound;
-            attackSoundIndex = 0;
+            yield return new WaitForSeconds(
+                soundGap
+            );
         }
 
-        if (soundToPlay != null)
+        // =========================
+        // 2. Yaha
+        // =========================
+
+        if (yahaSound != null)
         {
-            audioSource.PlayOneShot(
-                soundToPlay,
+            GameAudioManager.Instance.PlaySFX(
+                yahaSound,
                 attackSoundVolume
             );
         }

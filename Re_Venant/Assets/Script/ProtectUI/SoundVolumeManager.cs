@@ -7,37 +7,36 @@ public class SoundVolumeManager : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private GameObject settingPanel;
-    [SerializeField] private Slider soundSlider;
+
+    [Header("Sound")]
+    [SerializeField] private Slider bgmSlider;
+    [SerializeField] private Slider sfxSlider;
 
     [Header("View")]
-    [SerializeField] private PlayerViewModeManager viewModeManager;
-
-    [Header("Sound Settings")]
-    [SerializeField] private float defaultVolume = 1f;
+    [SerializeField]
+    private PlayerViewModeManager viewModeManager;
 
     [Header("Level EXP Settings")]
     [SerializeField] private Slider levelSlider;
-
     [SerializeField] private TMP_Text levelText;
-
     [SerializeField] private PlayerExperience playerExperience;
 
-    [SerializeField] private float defaultExpMultiplier = 1f;
+    [SerializeField]
+    private float defaultExpMultiplier = 1f;
 
     private const string ExpMultiplierKey =
         "ExperienceMultiplier";
 
-    private const string VolumeKey = "MasterVolume";
-
     private bool isSettingsOpen = false;
 
-    public bool IsSettingsOpen => isSettingsOpen;
+    public bool IsSettingsOpen =>
+        isSettingsOpen;
 
     private void Start()
     {
-        // -----------------------------
-        // 설정창 초기화
-        // -----------------------------
+        // =====================================
+        // Panel
+        // =====================================
 
         if (settingPanel != null)
         {
@@ -46,89 +45,125 @@ public class SoundVolumeManager : MonoBehaviour
 
         isSettingsOpen = false;
 
-        // -----------------------------
-        // 볼륨 초기화
-        // -----------------------------
+        // =====================================
+        // BGM / SFX
+        // =====================================
 
-        if (soundSlider != null)
-        {
-            float savedVolume =
-                PlayerPrefs.GetFloat(
-                    VolumeKey,
-                    defaultVolume
-                );
+        InitializeSoundSliders();
 
-            savedVolume =
-                Mathf.Clamp01(savedVolume);
+        // =====================================
+        // EXP
+        // =====================================
 
-            soundSlider.value =
-                savedVolume;
+        InitializeExperienceSlider();
 
-            AudioListener.volume =
-                savedVolume;
-
-            soundSlider.onValueChanged.AddListener(
-                SetVolume
-            );
-
-            // -----------------------------
-            // 경험치 배율 초기화
-            // -----------------------------
-
-            // -----------------------------
-            // 경험치 배율 초기화
-            // -----------------------------
-
-            if (playerExperience == null)
-            {
-                playerExperience =
-                    FindFirstObjectByType<PlayerExperience>();
-            }
-
-            if (levelSlider != null)
-            {
-                // EXP 배율 Slider는 무조건 x1 ~ x5
-                levelSlider.minValue = 1f;
-                levelSlider.maxValue = 5f;
-                levelSlider.wholeNumbers = true;
-
-                float savedMultiplier =
-                    PlayerPrefs.GetFloat(
-                        ExpMultiplierKey,
-                        defaultExpMultiplier
-                    );
-
-                savedMultiplier =
-                    Mathf.Clamp(
-                        savedMultiplier,
-                        1f,
-                        5f
-                    );
-
-                // 이벤트 연결 전에 값부터 설정
-                levelSlider.SetValueWithoutNotify(
-                    savedMultiplier
-                );
-
-                ApplyExperienceMultiplier(
-                    savedMultiplier
-                );
-
-                levelSlider.onValueChanged.AddListener(
-                    SetExperienceMultiplier
-                );
-            }
-        }
-
-        // -----------------------------
-        // 시점 시스템 자동 검색
-        // -----------------------------
+        // =====================================
+        // View
+        // =====================================
 
         if (viewModeManager == null)
         {
             viewModeManager =
                 FindFirstObjectByType<PlayerViewModeManager>();
         }
+    }
+
+    // =========================================
+    // SOUND INITIALIZE
+    // =========================================
+
+    private void InitializeSoundSliders()
+    {
+        if (bgmSlider != null)
+        {
+            bgmSlider.minValue = 0f;
+            bgmSlider.maxValue = 1f;
+            bgmSlider.wholeNumbers = false;
+
+            float volume =
+                GameAudioManager.Instance != null
+                ? GameAudioManager.Instance.BGMVolume
+                : PlayerPrefs.GetFloat(
+                    GameAudioManager.BGMVolumeKey,
+                    1f
+                );
+
+            bgmSlider.SetValueWithoutNotify(
+                volume
+            );
+
+            bgmSlider.onValueChanged.AddListener(
+                SetBGMVolume
+            );
+        }
+
+        if (sfxSlider != null)
+        {
+            sfxSlider.minValue = 0f;
+            sfxSlider.maxValue = 1f;
+            sfxSlider.wholeNumbers = false;
+
+            float volume =
+                GameAudioManager.Instance != null
+                ? GameAudioManager.Instance.SFXVolume
+                : PlayerPrefs.GetFloat(
+                    GameAudioManager.SFXVolumeKey,
+                    1f
+                );
+
+            sfxSlider.SetValueWithoutNotify(
+                volume
+            );
+
+            sfxSlider.onValueChanged.AddListener(
+                SetSFXVolume
+            );
+        }
+    }
+
+    // =========================================
+    // EXP INITIALIZE
+    // =========================================
+
+    private void InitializeExperienceSlider()
+    {
+        if (playerExperience == null)
+        {
+            playerExperience =
+                FindFirstObjectByType<PlayerExperience>();
+        }
+
+        if (levelSlider == null)
+            return;
+
+        levelSlider.minValue = 1f;
+        levelSlider.maxValue = 5f;
+        levelSlider.wholeNumbers = true;
+
+        float savedMultiplier =
+            PlayerPrefs.GetFloat(
+                ExpMultiplierKey,
+                defaultExpMultiplier
+            );
+
+        savedMultiplier =
+            Mathf.Clamp(
+                savedMultiplier,
+                1f,
+                5f
+            );
+
+        levelSlider.SetValueWithoutNotify(
+            savedMultiplier
+        );
+
+        ApplyExperienceMultiplier(
+            savedMultiplier
+        );
+
+        levelSlider.onValueChanged.AddListener(
+            SetExperienceMultiplier
+        );
     }
 
     private void Update()
@@ -138,9 +173,8 @@ public class SoundVolumeManager : MonoBehaviour
 
         if (Keyboard.current.tKey.wasPressedThisFrame)
         {
-            // LevelUp / GameOver 등
-            // 다른 시스템이 이미 게임을 정지시켰다면
-            // 설정창을 새로 열지 않음
+            // LevelUp 또는 GameOver 때문에 이미
+            // 정지된 경우 설정창을 열지 않음
             if (!isSettingsOpen &&
                 Time.timeScale <= 0f)
             {
@@ -150,6 +184,10 @@ public class SoundVolumeManager : MonoBehaviour
             ToggleSettings();
         }
     }
+
+    // =========================================
+    // SETTINGS PANEL
+    // =========================================
 
     private void ToggleSettings()
     {
@@ -167,17 +205,13 @@ public class SoundVolumeManager : MonoBehaviour
     {
         isSettingsOpen = true;
 
-        // 설정창 표시
         if (settingPanel != null)
         {
             settingPanel.SetActive(true);
         }
 
-        // 게임 시간 완전 정지
         Time.timeScale = 0f;
 
-        // 3인칭 / 1인칭에서도
-        // 마우스를 사용할 수 있도록 설정
         if (viewModeManager != null)
         {
             viewModeManager.SetUIMode(true);
@@ -190,66 +224,66 @@ public class SoundVolumeManager : MonoBehaviour
             Cursor.visible = true;
         }
 
-        Debug.Log("SETTING OPEN - GAME PAUSED");
+        Debug.Log(
+            "SETTING OPEN - GAME PAUSED"
+        );
     }
 
     private void CloseSettings()
     {
         isSettingsOpen = false;
 
-        // 설정창 닫기
         if (settingPanel != null)
         {
             settingPanel.SetActive(false);
         }
 
-        // 게임 시간 재개
         Time.timeScale = 1f;
 
-        // 현재 시점에 맞는
-        // 마우스 상태로 복구
         if (viewModeManager != null)
         {
             viewModeManager.SetUIMode(false);
         }
 
-        Debug.Log("SETTING CLOSED - GAME RESUMED");
-    }
-
-    public void SetVolume(float volume)
-    {
-        volume =
-            Mathf.Clamp01(volume);
-
-        AudioListener.volume =
-            volume;
-
-        PlayerPrefs.SetFloat(
-            VolumeKey,
-            volume
+        Debug.Log(
+            "SETTING CLOSED - GAME RESUMED"
         );
-
-        PlayerPrefs.Save();
     }
 
-    private void OnDestroy()
+    // =========================================
+    // BGM
+    // =========================================
+
+    public void SetBGMVolume(float value)
     {
-        if (soundSlider != null)
+        if (GameAudioManager.Instance != null)
         {
-            soundSlider.onValueChanged.RemoveListener(
-                SetVolume
-            );
-        }
-
-        if (levelSlider != null)
-        {
-            levelSlider.onValueChanged.RemoveListener(
-                SetExperienceMultiplier
+            GameAudioManager.Instance.SetBGMVolume(
+                value
             );
         }
     }
 
-    public void SetExperienceMultiplier(float value)
+    // =========================================
+    // SFX
+    // =========================================
+
+    public void SetSFXVolume(float value)
+    {
+        if (GameAudioManager.Instance != null)
+        {
+            GameAudioManager.Instance.SetSFXVolume(
+                value
+            );
+        }
+    }
+
+    // =========================================
+    // EXPERIENCE
+    // =========================================
+
+    public void SetExperienceMultiplier(
+        float value)
     {
         float multiplier =
             Mathf.Clamp(
@@ -271,7 +305,7 @@ public class SoundVolumeManager : MonoBehaviour
     }
 
     private void ApplyExperienceMultiplier(
-    float multiplier)
+        float multiplier)
     {
         if (playerExperience != null)
         {
@@ -284,6 +318,30 @@ public class SoundVolumeManager : MonoBehaviour
         {
             levelText.text =
                 $"EXP x{multiplier:0}";
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (bgmSlider != null)
+        {
+            bgmSlider.onValueChanged.RemoveListener(
+                SetBGMVolume
+            );
+        }
+
+        if (sfxSlider != null)
+        {
+            sfxSlider.onValueChanged.RemoveListener(
+                SetSFXVolume
+            );
+        }
+
+        if (levelSlider != null)
+        {
+            levelSlider.onValueChanged.RemoveListener(
+                SetExperienceMultiplier
+            );
         }
     }
 }

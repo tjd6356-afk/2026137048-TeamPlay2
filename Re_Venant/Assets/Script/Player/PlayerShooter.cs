@@ -23,7 +23,6 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private PlayerAnimationController animationController;
 
     [Header("Sound")]
-    [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip shootSound;
 
     [Range(0f, 1f)]
@@ -54,12 +53,6 @@ public class PlayerShooter : MonoBehaviour
         {
             bulletHealth =
                 GetComponent<PlayerBulletHealth>();
-        }
-
-        if (audioSource == null)
-        {
-            audioSource =
-                GetComponent<AudioSource>();
         }
     }
 
@@ -150,10 +143,9 @@ public class PlayerShooter : MonoBehaviour
             animationController.PlayThrow();
         }
 
-        if (audioSource != null &&
-            shootSound != null)
+        if (GameAudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(
+            GameAudioManager.Instance.PlaySFX(
                 shootSound,
                 shootVolume
             );

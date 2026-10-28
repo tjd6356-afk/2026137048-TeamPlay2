@@ -24,8 +24,7 @@ public class PlayerMeleeAttack : MonoBehaviour
     [SerializeField] private float swingDuration = 0.25f;
 
     [Header("Attack Sound")]
-    [SerializeField] private AudioClip bryySound;
-    [SerializeField] private AudioClip yahaSound;
+    [SerializeField] private AudioClip attackSound;
 
     [Range(0f, 1f)]
     [SerializeField] private float attackSoundVolume = 1f;
@@ -88,12 +87,10 @@ public class PlayerMeleeAttack : MonoBehaviour
         if (hitboxPoint == null)
             return;
 
-        // Bryy → Yaha
-        StartCoroutine(
-            PlayAttackSoundSequence()
-        );
+        // 근접 공격 효과음
+        PlayAttackSound();
 
-        // 근접 공격
+        // 공격 실행
         StartCoroutine(
             AttackRoutine()
         );
@@ -230,47 +227,18 @@ public class PlayerMeleeAttack : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayAttackSoundSequence()
+    private void PlayAttackSound()
     {
+        if (attackSound == null)
+            return;
+
         if (GameAudioManager.Instance == null)
-            yield break;
+            return;
 
-        // =========================
-        // 1. Bryy
-        // =========================
-
-        if (bryySound != null)
-        {
-            GameAudioManager.Instance.PlaySFX(
-                bryySound,
-                attackSoundVolume
-            );
-
-            // Bryy가 끝날 때까지 기다림
-            yield return new WaitForSeconds(
-                bryySound.length
-            );
-        }
-
-        // 두 음성 사이 추가 간격
-        if (soundGap > 0f)
-        {
-            yield return new WaitForSeconds(
-                soundGap
-            );
-        }
-
-        // =========================
-        // 2. Yaha
-        // =========================
-
-        if (yahaSound != null)
-        {
-            GameAudioManager.Instance.PlaySFX(
-                yahaSound,
-                attackSoundVolume
-            );
-        }
+        GameAudioManager.Instance.PlaySFX(
+            attackSound,
+            attackSoundVolume
+        );
     }
 
     public void IncreaseDamage(float amount)

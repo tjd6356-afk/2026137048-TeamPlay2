@@ -602,9 +602,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1467822969}
-        m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
-        m_MethodName: GameStart
+      - m_Target: {fileID: 1467822972}
+        m_TargetAssemblyTypeName: TitleHelpManager, Assembly-CSharp
+        m_MethodName: OpenHelpPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2029,6 +2029,7 @@ GameObject:
   - component: {fileID: 1467822970}
   - component: {fileID: 1467822969}
   - component: {fileID: 1467822971}
+  - component: {fileID: 1467822972}
   m_Layer: 0
   m_Name: 'Title Manager '
   m_TagString: Untagged
@@ -2080,6 +2081,21 @@ MonoBehaviour:
   closeButton: {fileID: 958295592}
   soundSlider: {fileID: 1526558864}
   defaultVolume: 1
+--- !u!114 &1467822972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1467822968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d596ba0c2627d645a72749ed2c59f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TitleHelpManager
+  helpPanel: {fileID: 567644166}
+  helpButton: {fileID: 333102178}
+  closeButton: {fileID: 1973511665}
 --- !u!1 &1526558862
 GameObject:
   m_ObjectHideFlags: 0
@@ -2651,9 +2667,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1467822971}
-        m_TargetAssemblyTypeName: TitleSettingsManager, Assembly-CSharp
-        m_MethodName: CloseSettings
+      - m_Target: {fileID: 1467822972}
+        m_TargetAssemblyTypeName: TitleHelpManager, Assembly-CSharp
+        m_MethodName: CloseHelpPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
